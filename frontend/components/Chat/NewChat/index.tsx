@@ -49,6 +49,15 @@ const AgentChat = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const prevMessageRef = useRef<string>("");
 
+  const generateUniqueThreadId = () => {
+    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let out = "";
+    for (let i = 0; i < length; i++) {
+      out += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return out;
+  };
+
   // Auto-scroll to bottom
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -72,9 +81,15 @@ const AgentChat = ({
       try {
         const strategies = await getUserStrategies(currentUserId);
         if (strategies && strategies.length > 0) {
+
           // Use the first strategy as thread_id
-          setThreadId(strategies[0]._id);
-          console.log("Using strategy as thread_id:", strategies[0]._id);
+          // setThreadId(strategies[0]._id);
+
+          const threadId = generateUniqueThreadId();
+          setThreadId(threadId);
+          
+          // console.log("Using strategy as thread_id:", strategies[0]._id);
+          console.log("Using strategy as thread_id:", threadId);
         } else {
           console.warn(
             "No strategies found for user. Create a strategy first."
