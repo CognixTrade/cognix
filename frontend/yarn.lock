@@ -23,7 +23,26 @@
     es-toolkit "^1.39.7"
     tslib "^2.8.1"
 
-"@avail-project/nexus-core@0.0.2", "@avail-project/nexus-core@^0.0.2":
+"@avail-project/nexus-core@0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@avail-project/nexus-core/-/nexus-core-0.0.1.tgz#7cbef0a62d7e733a86922287cf3d2a4c81a47fc9"
+  integrity sha512-34PJfuL22tZ/cJClVOZT2Tuwp2ZoXYyb3ys9k4vicgBloLxs4o7JCM3ZhBJMdevWey9aFJTf8VHZGCQqHSqSyA==
+  dependencies:
+    "@arcana/ca-common" "1.0.1-alpha.6"
+    "@cosmjs/proto-signing" "^0.34.0"
+    "@cosmjs/stargate" "^0.34.0"
+    "@metamask/safe-event-emitter" "3.1.2"
+    "@starkware-industries/starkware-crypto-utils" "^0.2.1"
+    axios "^1.7.7"
+    decimal.js "^10.6.0"
+    es-toolkit "^1.39.8"
+    fuels "0.101.1"
+    it-ws "^6.1.5"
+    long "^5.3.2"
+    msgpackr "^1.11.4"
+    tslib "2.8.1"
+
+"@avail-project/nexus-core@^0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@avail-project/nexus-core/-/nexus-core-0.0.2.tgz#c2973435dbe4c2c28f9e82fe06019655c2c5f362"
   integrity sha512-fla/nMdR8vb271nzAZ1qU2iRpdCDiWcTSvTsu0hYHhLEECWLDK5axDAEhZu0uf4lru1bMUqvLtCBeh/m3J8QUg==
@@ -42,12 +61,12 @@
     msgpackr "^1.11.4"
     tslib "2.8.1"
 
-"@avail-project/nexus-widgets@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@avail-project/nexus-widgets/-/nexus-widgets-0.0.6.tgz#be82aefde3599428e78d12f1015f14c8e109fc8f"
-  integrity sha512-1k71EBFfkSvHIIx3O4aJKRFGp9wk/QE/xndSeMbly58aMCdqgj66Oms33rplhlfgALY3pZR+2PqO7L/e44WqFQ==
+"@avail-project/nexus-widgets@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@avail-project/nexus-widgets/-/nexus-widgets-0.0.5.tgz#72b54a3b5842d9602e86b28ff498522302e555b7"
+  integrity sha512-CtApLykvH6DEaywKxdSZIwD3KkhY+XAEALVjU8hB0fnm96LS52YyccgMaSmLvYnMmkIqAO/756EsRn/RxPZhyw==
   dependencies:
-    "@avail-project/nexus-core" "0.0.2"
+    "@avail-project/nexus-core" "0.0.1"
     "@lottiefiles/dotlottie-react" "0.14.2"
     class-variance-authority "0.7.1"
     clsx "2.1.1"

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@avail-project/nexus-core": "^0.0.2",
-    "@avail-project/nexus-widgets": "^0.0.6",
+    "@avail-project/nexus-widgets": "0.0.5",
     "@chakra-ui/next-js": "^2.2.0",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",

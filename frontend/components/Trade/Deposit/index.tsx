@@ -3,7 +3,7 @@ import CurrencyInput from "react-currency-input-field";
 import { BridgeButton, useNexus } from "@avail-project/nexus-widgets";
 import { useWallets } from "@privy-io/react-auth";
 import { createWalletClient, custom } from "viem";
-import { arbitrumSepolia } from "viem/chains";
+import { arbitrum, arbitrumSepolia } from "viem/chains";
 
 type DepositProps = {};
 
@@ -48,11 +48,11 @@ const Deposit = ({}: DepositProps) => {
             const provider = await wallet.getEthereumProvider();
             const walletClient = createWalletClient({
                 account: wallet.address as `0x${string}`,
-                chain: arbitrumSepolia,
+                chain: arbitrum,
                 transport: custom(provider),
             });
 
-            // USDC contract address on Arbitrum Sepolia
+            // USDC contract address on Arbitrum
             const USDC_ADDRESS = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
 
             // ERC20 Transfer ABI
