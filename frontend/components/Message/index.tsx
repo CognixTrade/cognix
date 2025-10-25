@@ -14,6 +14,7 @@ type MessageProps = {
   autoFocus?: boolean;
   onSubmit?: () => void;
   onKeyPress?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  disabled?: boolean;
 };
 
 const Message = ({
@@ -25,6 +26,7 @@ const Message = ({
   autoFocus,
   onSubmit,
   onKeyPress,
+  disabled,
 }: MessageProps) => {
   const { colorMode, setColorMode } = useColorMode();
   const isDarkMode = colorMode === "dark";
@@ -53,18 +55,20 @@ const Message = ({
         </div>
       )}
       <TextareaAutosize
-        className="w-full py-2 bg-transparent text-body-1m text-theme-primary outline-none resize-none placeholder:text-theme-tertiary md:text-[1rem]"
+        className="w-full py-2 bg-transparent text-body-1m text-theme-primary outline-none resize-none placeholder:text-theme-tertiary md:text-[1rem] disabled:opacity-50 disabled:cursor-not-allowed"
         maxRows={5}
         autoFocus={autoFocus}
         value={value}
         onChange={onChange}
         onKeyPress={onKeyPress}
-        placeholder={placeholder || "Ask NeuraAI anything"}
+        placeholder={placeholder || "Ask Neutrino AI anything"}
+        disabled={disabled}
       />
       <button
-        className="shrink-0 w-10 h-10 ml-6 rounded-full bg-theme-brand transition-colors hover:bg-primary-1/90 md:ml-3"
+        className="shrink-0 w-10 h-10 ml-6 rounded-full bg-theme-brand transition-colors hover:bg-primary-1/90 md:ml-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-theme-brand"
         onClick={onSubmit}
         type="button"
+        disabled={disabled}
       >
         <Icon className="fill-theme-white-fixed" name="arrow-right" />
       </button>

@@ -30,6 +30,7 @@ type AgentChatProps = {
   websocketUrl?: string;
   externalMessage?: string;
   onMessageSent?: () => void;
+  onProcessingChange?: (isProcessing: boolean) => void;
 };
 
 const AgentChat = ({
@@ -37,6 +38,7 @@ const AgentChat = ({
   websocketUrl = `${process.env.NEXT_PUBLIC_AI_BASE_URL}/chat`,
   externalMessage,
   onMessageSent,
+  onProcessingChange,
 }: AgentChatProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConnected, setIsConnected] = useState(false);
@@ -85,6 +87,11 @@ const AgentChat = ({
 
     fetchUserAndStrategy();
   }, []);
+
+  // Notify parent component when processing state changes
+  useEffect(() => {
+    onProcessingChange?.(isProcessing);
+  }, [isProcessing, onProcessingChange]);
 
   // Helper function to make agent names more readable
   const formatAgentNameForDisplay = (agentName: string): string => {

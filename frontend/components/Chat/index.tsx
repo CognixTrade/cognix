@@ -29,6 +29,7 @@ const Chat = ({ children }: ChatProps) => {
     const [message, setMessage] = useState("");
     const [visible, setVisible] = useState(false);
     const [triggerMessage, setTriggerMessage] = useState("");
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const handleSendMessage = () => {
         if (message.trim() !== "") {
@@ -77,6 +78,7 @@ const Chat = ({ children }: ChatProps) => {
                         <NewChat
                             externalMessage={triggerMessage}
                             onMessageSent={handleMessageSent}
+                            onProcessingChange={setIsProcessing}
                         />
                     )}
                 </div>
@@ -88,6 +90,7 @@ const Chat = ({ children }: ChatProps) => {
                     onKeyPress={handleKeyPress}
                     autoFocus
                     logo
+                    disabled={isProcessing}
                 />
             </div>
             {/* <History visible={visible} onClose={() => setVisible(false)} /> */}
