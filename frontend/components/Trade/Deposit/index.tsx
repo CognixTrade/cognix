@@ -3,7 +3,7 @@ import CurrencyInput from "react-currency-input-field";
 import { BridgeButton, useNexus } from "@avail-project/nexus-widgets";
 import { useWallets } from "@privy-io/react-auth";
 import { createWalletClient, custom } from "viem";
-import { arbitrum, arbitrumSepolia } from "viem/chains";
+import { arbitrum } from "viem/chains";
 
 type DepositProps = {};
 
@@ -127,7 +127,7 @@ const Deposit = ({}: DepositProps) => {
                                 Network
                             </div>
                             <div className="text-theme-primary">
-                                Arbitrum <span className="text-theme-tertiary">Sepolia</span>
+                                Arbitrum <span className="text-theme-tertiary">One</span>
                             </div>
                         </div>
                     </div>
@@ -141,7 +141,7 @@ const Deposit = ({}: DepositProps) => {
                     ) : (
                         <BridgeButton
                             prefill={{
-                                chainId: 42161, // Arbitrum Sepolia
+                                chainId: 42161, // Arbitrum One
                                 token: "USDC",
                                 amount: amount,
                             }}
@@ -161,7 +161,7 @@ const Deposit = ({}: DepositProps) => {
                                         }}
                                         disabled={!amount || parseFloat(amount) <= 0 || isLoading || bridgeCompleted}
                                     >
-                                        {isLoading ? "Bridging..." : bridgeCompleted ? "Bridge Completed ✓" : "Bridge to Arbitrum Sepolia"}
+                                        {isLoading ? "Bridging..." : bridgeCompleted ? "Bridge Completed ✓" : "Bridge to Arbitrum One"}
                                     </button>
                                     {bridgeCompleted && (
                                         <button
