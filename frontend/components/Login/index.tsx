@@ -37,7 +37,7 @@ const Login = ({
             </div>
             <div className="flex grow justify-center items-center px-12 py-14 lg:p-0">
                 <div className="max-w-[32.5rem] w-full 2xl:max-w-[24rem]">
-                    <div className="mb-10 2xl:mb-8">
+                    <div className="mb-4 2xl:mb-2">
                         <Link
                             className="absolute top-10 left-10 z-2 2xl:top-8 2xl:right-8 lg:top-10 lg:right-10 md:static md:inline-block md:mb-5"
                             href="/"
