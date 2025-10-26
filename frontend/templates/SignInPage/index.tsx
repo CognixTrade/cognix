@@ -24,6 +24,7 @@ import { useWallets } from "@privy-io/react-auth";
 import { useNexus } from "@avail-project/nexus-widgets";
 import { TransferButton } from "@avail-project/nexus-widgets";
 import { saveUserData } from "../../utils/userStorage";
+import { useRef } from "react";
 
 const SignInPage = () => {
   const { colorMode } = useColorMode();
@@ -33,6 +34,7 @@ const SignInPage = () => {
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();
   const { setProvider } = useNexus();
+  const hasRunRef = useRef(false);
 
   useEffect(() => {
     if (!ready) return;
@@ -43,6 +45,9 @@ const SignInPage = () => {
     (async () => {
       const wallet = wallets[0]; // assuming user connected one wallet
       if (!wallet) return;
+      
+      if (hasRunRef.current) return;
+      hasRunRef.current = true;
 
       const connectedWallet = wallet.address;
       console.log("✅ Connected wallet:", connectedWallet);
@@ -114,7 +119,7 @@ const SignInPage = () => {
 
       router.push("/my-assets");
     })();
-  }, [ready, authenticated, user, router, wallets]);
+  }, [ready, authenticated, user, wallets]);
 
   const handleConnectWallet = () => {
     console.log("Connect wallet clicked");
