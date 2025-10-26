@@ -174,7 +174,7 @@ const SignInPage = () => {
                 Create Algorithmic Signals
               </h3>
               <p className="text-sm text-base-2/70 leading-relaxed">
-                Create buy/sell strategies in plain language, auto-generated like quant algorithms.
+                Build algorithmic buy/sell quant strategies in plain language.
               </p>
             </div>
           </div>
@@ -198,7 +198,7 @@ const SignInPage = () => {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-base text-base-2 mb-1">
-                Automatic Agentic Verification
+                Autonomous Agentic Verification
               </h3>
               <p className="text-sm text-base-2/70 leading-relaxed">
                 AI agents analyze signals{" "}
