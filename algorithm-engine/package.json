@@ -1,0 +1,24 @@
+{
+  "name": "algorithm-engine",
+  "version": "1.0.0",
+  "description": "Real-time EMA crossover detection system using Bitquery WebSocket",
+  "main": "server.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "@apollo/client": "^4.0.8",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
+    "graphql": "^16.11.0",
+    "graphql-ws": "^6.0.6",
+    "mongoose": "^7.5.0",
+    "redis": "^4.6.10",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
