@@ -24,6 +24,7 @@ import { useWallets } from "@privy-io/react-auth";
 import { useNexus } from "@avail-project/nexus-widgets";
 import { TransferButton } from "@avail-project/nexus-widgets";
 import { saveUserData } from "../../utils/userStorage";
+import { useRef } from "react";
 
 const SignInPage = () => {
   const { colorMode } = useColorMode();
@@ -33,6 +34,7 @@ const SignInPage = () => {
   const { ready, authenticated, login, logout, user } = usePrivy();
   const { wallets } = useWallets();
   const { setProvider } = useNexus();
+  const hasRunRef = useRef(false);
 
   useEffect(() => {
     if (!ready) return;
@@ -43,6 +45,9 @@ const SignInPage = () => {
     (async () => {
       const wallet = wallets[0]; // assuming user connected one wallet
       if (!wallet) return;
+      
+      if (hasRunRef.current) return;
+      hasRunRef.current = true;
 
       const connectedWallet = wallet.address;
       console.log("✅ Connected wallet:", connectedWallet);
@@ -114,7 +119,7 @@ const SignInPage = () => {
 
       router.push("/my-assets");
     })();
-  }, [ready, authenticated, user, router, wallets]);
+  }, [ready, authenticated, user, wallets]);
 
   const handleConnectWallet = () => {
     console.log("Connect wallet clicked");
@@ -132,21 +137,17 @@ const SignInPage = () => {
 
   return (
     <Login
-      title="Neutrino - House for AI trading"
+      title="Neutrino"
       image="/images/login-pic-1.png"
       signIn
     >
       <div className="mb-8 space-y-6">
         {/* Hero Section */}
-        <div className="text-center space-y-2">
+        <div className="space-y-2">
           <h1 className="text-2xl font-bold text-base-2 leading-tight">
-            Turn Ideas Into{" "}
-            <span className="text-yellow-200">Autonomous Strategies</span>
+            Trade with{" "}
+            <span className="text-yellow-200">Intelligence</span>
           </h1>
-          <p className="text-sm text-base-2/60 max-w-md mx-auto">
-            {/* Like <span className="text-brand-400">Cursor</span> for coding, but for <span className="text-green-300">trading</span> */}
-            {/* Like Cursor for coding, but for trading */}
-          </p>
         </div>
 
         {/* Feature Grid */}
@@ -170,11 +171,10 @@ const SignInPage = () => {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-base text-base-2 mb-1">
-                Compose AI Agents
+                Create Algorithmic Signals
               </h3>
               <p className="text-sm text-base-2/70 leading-relaxed">
-                Configure multiple AI agents with custom voting weights and
-                prompts
+                Build algorithmic buy/sell quant strategies in plain language.
               </p>
             </div>
           </div>
@@ -198,14 +198,14 @@ const SignInPage = () => {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-base text-base-2 mb-1">
-                {`Explain -> Code -> Test`}
+                Autonomous Agentic Verification
               </h3>
               <p className="text-sm text-base-2/70 leading-relaxed">
-                Describe strategies like{" "}
+                AI agents analyze signals{" "}
                 <span className="font-medium text-base-2">
-                  "9-15 EMA crossover"
+                  "(technical & sentiment)"
                 </span>{" "}
-                and get instant backtested code
+                  before execution
               </p>
             </div>
           </div>
