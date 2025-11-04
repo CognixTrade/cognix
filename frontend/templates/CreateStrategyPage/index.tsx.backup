@@ -37,16 +37,12 @@ const CreateStrategyPage = () => {
     // Page 1
     name: "",
     description: "",
-    selectedToken: "" as string,
-    leverage: 2 as number,
     riskLevel: "medium" as RiskLevel,
     visibility: "private" as VisibilityType,
 
     // Page 2
     selectedTechnicalStrategies: [] as TechnicalStrategy[],
     customTechnicalStrategy: "",
-    selectedIndicator: "" as string,
-    selectedTimeframe: "" as string,
 
     // Agent configs
     supervisor: { prompt: "" } as AgentConfig,
@@ -456,39 +452,6 @@ plot(sma50, color=color.red)`;
 
               <div>
                 <div className="text-base-2 text-theme-primary mb-3">
-                  Select Token
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  {(["BTC", "ETH"] as string[]).map((token) => (
-                    <button
-                      key={token}
-                      onClick={() => {
-                        handleInputChange("selectedToken", token);
-                        // Auto-adjust leverage when token changes
-                        const maxLeverage = token === "BTC" ? 40 : 25;
-                        const defaultLeverage = Math.round(maxLeverage * 0.6);
-                        handleInputChange("leverage", defaultLeverage);
-                      }}
-                      className={`p-4 rounded-xl border-2 transition-all ${
-                        formData.selectedToken === token
-                          ? "border-primary-1 bg-primary-1/10"
-                          : "border-theme-stroke hover:border-theme-secondary"
-                      }`}
-                    >
-                      <div className="text-title-2 text-theme-primary mb-1">
-                        {token}
-                      </div>
-                      <div className="text-caption-2 text-theme-tertiary">
-                        {token === "BTC" && "Max 40X leverage"}
-                        {token === "ETH" && "Max 25X leverage"}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-base-2 text-theme-primary mb-3">
                   Risk Level
                 </div>
                 <div className="grid grid-cols-3 gap-4">
@@ -512,69 +475,6 @@ plot(sma50, color=color.red)`;
                       </div>
                     </button>
                   ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-base-2 text-theme-primary mb-3">
-                  Leverage Range
-                  {formData.selectedToken && (
-                    <span className="text-caption-1 text-theme-secondary ml-2">
-                      ({formData.selectedToken})
-                    </span>
-                  )}
-                </div>
-                {!formData.selectedToken ? (
-                  <div className="p-4 rounded-xl bg-theme-on-surface-2 border-2 border-theme-stroke text-theme-tertiary text-caption-1">
-                    Please select a token first to set leverage
-                  </div>
-                ) : (
-                  <div>
-                    <div className="flex items-center gap-6 mb-3">
-                      <div className="flex-1">
-                        <Slider
-                          min={2}
-                          max={formData.selectedToken === "BTC" ? 40 : 25}
-                          step={1}
-                          value={formData.leverage}
-                          onChange={(value) =>
-                            handleInputChange("leverage", value)
-                          }
-                        >
-                          <SliderTrack>
-                            <SliderFilledTrack />
-                          </SliderTrack>
-                          <SliderThumb />
-                        </Slider>
-                      </div>
-                      <div className="text-title-2 text-theme-primary font-semibold w-20 text-center">
-                        {formData.leverage.toFixed(0)}X
-                      </div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-theme-on-surface-2/50 border border-theme-stroke">
-                      <div className="text-caption-2 text-theme-tertiary mb-2">
-                        Based on your risk level
-                      </div>
-                      <button
-                        onClick={() => {
-                          const maxLeverage = formData.selectedToken === "BTC" ? 40 : 25;
-                          const risks = { low: 0.3, medium: 0.6, high: 0.9 };
-                          const defaultLev = Math.round(maxLeverage * risks[formData.riskLevel]);
-                          handleInputChange("leverage", defaultLev);
-                        }}
-                        className="text-caption-2 text-blue-500 hover:text-blue-600 transition-colors"
-                      >
-                        Reset to Default
-                      </button>
-                    </div>
-                  </div>
-                )}
-                <div className="text-caption-2 text-theme-tertiary mt-2">
-                  {!formData.selectedToken
-                    ? "Select a token to adjust leverage"
-                    : formData.selectedToken === "BTC"
-                    ? "Adjust leverage between 2X and 40X"
-                    : "Adjust leverage between 2X and 25X"}
                 </div>
               </div>
 
