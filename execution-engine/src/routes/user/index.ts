@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getUserByWalletId, registerUser, getAllUsers } from '../../controllers/user';
+import { getUserByWalletId, registerUser, getAllUsers, toggleAutonomous } from '../../controllers/user';
 import { asyncHandler } from '../../middleware/errorHandler';
 
 const router = Router();
@@ -9,6 +9,9 @@ router.get('/', asyncHandler(getAllUsers));
 
 // POST /api/v1/user/register
 router.post('/register', asyncHandler(registerUser));
+
+// PUT /api/v1/user/:id/autonomous - Toggle autonomous mode
+router.put('/:id/autonomous', asyncHandler(toggleAutonomous));
 
 // GET /api/v1/user/:uniqueWalletId - Get user by wallet ID
 router.get('/:uniqueWalletId', asyncHandler(getUserByWalletId));
