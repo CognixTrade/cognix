@@ -40,14 +40,14 @@ export const TECHNICAL_STRATEGIES: TechnicalStrategy[] = [
     {
         id: "double-ema",
         name: "Double EMA Crossover",
-        description: "Uses two exponential moving averages (fast and slow) to identify trend changes and generate buy/sell signals",
+        description: "Uses 9-50 EMA crossover to identify trend changes and generate buy/sell signals",
         generatedCode: {
             pinescript: `//@version=5
 strategy("Double EMA Crossover", overlay=true)
 
 // Input parameters
-fastLength = input.int(12, "Fast EMA Length", minval=1)
-slowLength = input.int(26, "Slow EMA Length", minval=1)
+fastLength = input.int(9, "Fast EMA Length", minval=1)
+slowLength = input.int(50, "Slow EMA Length", minval=1)
 
 // Calculate EMAs
 fastEMA = ta.ema(close, fastLength)
@@ -75,8 +75,8 @@ import numpy as np
 from backtesting import Strategy, Backtest
 
 class DoubleEMACrossover(Strategy):
-    fast_period = 12
-    slow_period = 26
+    fast_period = 9
+    slow_period = 50
 
     def init(self):
         close = self.data.Close
@@ -101,85 +101,9 @@ class DoubleEMACrossover(Strategy):
         },
     },
     {
-        id: "stochastic",
-        name: "Stochastic Crossover",
-        description: "Identifies overbought and oversold conditions using stochastic oscillator momentum indicators",
-        generatedCode: {
-            pinescript: `//@version=5
-strategy("Stochastic Crossover", overlay=false)
-
-// Input parameters
-length = input.int(14, "Stochastic Length", minval=1)
-smoothK = input.int(3, "Smooth K", minval=1)
-smoothD = input.int(3, "Smooth D", minval=1)
-overbought = input.int(80, "Overbought Level", minval=50, maxval=100)
-oversold = input.int(20, "Oversold Level", minval=0, maxval=50)
-
-// Calculate Stochastic
-k = ta.sma(ta.stoch(close, high, low, length), smoothK)
-d = ta.sma(k, smoothD)
-
-// Entry conditions
-longCondition = ta.crossover(k, d) and k < oversold
-shortCondition = ta.crossunder(k, d) and k > overbought
-
-// Execute trades
-if (longCondition)
-    strategy.entry("Long", strategy.long)
-if (shortCondition)
-    strategy.close("Long")
-
-// Plot indicators
-plot(k, color=color.blue, title="%K", linewidth=2)
-plot(d, color=color.red, title="%D", linewidth=2)
-hline(overbought, "Overbought", color=color.red, linestyle=hline.style_dashed)
-hline(oversold, "Oversold", color=color.green, linestyle=hline.style_dashed)`,
-            python: `import pandas as pd
-import numpy as np
-from backtesting import Strategy, Backtest
-
-class StochasticCrossover(Strategy):
-    stoch_length = 14
-    smooth_k = 3
-    smooth_d = 3
-    overbought = 80
-    oversold = 20
-
-    def init(self):
-        def stochastic(high, low, close, period, smooth_k, smooth_d):
-            lowest_low = pd.Series(low).rolling(window=period).min()
-            highest_high = pd.Series(high).rolling(window=period).max()
-            k = 100 * (close - lowest_low) / (highest_high - lowest_low)
-            k_smooth = k.rolling(window=smooth_k).mean()
-            d_smooth = k_smooth.rolling(window=smooth_d).mean()
-            return k_smooth, d_smooth
-
-        self.k, self.d = self.I(
-            stochastic,
-            self.data.High,
-            self.data.Low,
-            self.data.Close,
-            self.stoch_length,
-            self.smooth_k,
-            self.smooth_d
-        )
-
-    def next(self):
-        # Buy: K crosses above D in oversold region
-        if self.k[-1] > self.d[-1] and self.k[-2] <= self.d[-2] and self.k[-1] < self.oversold:
-            if not self.position:
-                self.buy()
-
-        # Sell: K crosses below D in overbought region
-        elif self.k[-1] < self.d[-1] and self.k[-2] >= self.d[-2] and self.k[-1] > self.overbought:
-            if self.position:
-                self.position.close()`,
-        },
-    },
-    {
-        id: "rsi-divergence",
-        name: "RSI Divergence",
-        description: "Detects potential reversals by analyzing divergences between price and RSI indicator",
+        id: "rsi",
+        name: "RSI",
+        description: "Emits overbought and oversold signals using the Relative Strength Index indicator",
         generatedCode: {
             pinescript: `//@version=5
 strategy("RSI Divergence", overlay=true)
@@ -284,75 +208,6 @@ class RSIDivergence(Strategy):
 
             self.last_high_price = curr_high_price
             self.last_high_rsi = curr_high_rsi`,
-        },
-    },
-    {
-        id: "macd-signal",
-        name: "MACD Signal",
-        description: "Generates trading signals based on MACD line crossing over signal line",
-        generatedCode: {
-            pinescript: `//@version=5
-strategy("MACD Signal", overlay=false)
-
-// Input parameters
-fastLength = input.int(12, "Fast EMA Length", minval=1)
-slowLength = input.int(26, "Slow EMA Length", minval=1)
-signalLength = input.int(9, "Signal Length", minval=1)
-
-// Calculate MACD
-[macdLine, signalLine, histLine] = ta.macd(close, fastLength, slowLength, signalLength)
-
-// Entry conditions
-longCondition = ta.crossover(macdLine, signalLine)
-shortCondition = ta.crossunder(macdLine, signalLine)
-
-// Execute trades
-if (longCondition)
-    strategy.entry("Long", strategy.long)
-if (shortCondition)
-    strategy.close("Long")
-
-// Plot indicators
-plot(macdLine, color=color.blue, title="MACD", linewidth=2)
-plot(signalLine, color=color.red, title="Signal", linewidth=2)
-plot(histLine, color=color.gray, title="Histogram", style=plot.style_histogram)
-hline(0, "Zero Line", color=color.gray, linestyle=hline.style_dashed)`,
-            python: `import pandas as pd
-import numpy as np
-from backtesting import Strategy, Backtest
-
-class MACDSignal(Strategy):
-    fast_period = 12
-    slow_period = 26
-    signal_period = 9
-
-    def init(self):
-        def macd(close, fast, slow, signal):
-            fast_ema = pd.Series(close).ewm(span=fast, adjust=False).mean()
-            slow_ema = pd.Series(close).ewm(span=slow, adjust=False).mean()
-            macd_line = fast_ema - slow_ema
-            signal_line = macd_line.ewm(span=signal, adjust=False).mean()
-            histogram = macd_line - signal_line
-            return macd_line, signal_line, histogram
-
-        self.macd_line, self.signal_line, self.histogram = self.I(
-            macd,
-            self.data.Close,
-            self.fast_period,
-            self.slow_period,
-            self.signal_period
-        )
-
-    def next(self):
-        # Buy signal: MACD crosses above signal line
-        if self.macd_line[-1] > self.signal_line[-1] and self.macd_line[-2] <= self.signal_line[-2]:
-            if not self.position:
-                self.buy()
-
-        # Sell signal: MACD crosses below signal line
-        elif self.macd_line[-1] < self.signal_line[-1] and self.macd_line[-2] >= self.signal_line[-2]:
-            if self.position:
-                self.position.close()`,
         },
     },
 ];

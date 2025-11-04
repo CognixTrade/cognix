@@ -277,7 +277,7 @@ plot(sma50, color=color.red)`;
         executor: executorAgent,
         technical: technicalAgent,
         sentiment: sentimentAgent,
-        webSearch: webSearchAgent
+        webSearch: webSearchAgent,
       });
 
       // Add supervisor (no voting power)
@@ -463,11 +463,15 @@ plot(sma50, color=color.red)`;
                     <button
                       key={token}
                       onClick={() => {
-                        handleInputChange("selectedToken", token);
                         // Auto-adjust leverage when token changes
                         const maxLeverage = token === "BTC" ? 40 : 25;
                         const defaultLeverage = Math.round(maxLeverage * 0.6);
-                        handleInputChange("leverage", defaultLeverage);
+                        // Update both selectedToken and leverage in a single state update
+                        setFormData({
+                          ...formData,
+                          selectedToken: token,
+                          leverage: defaultLeverage,
+                        });
                       }}
                       className={`p-4 rounded-xl border-2 transition-all ${
                         formData.selectedToken === token
@@ -475,10 +479,22 @@ plot(sma50, color=color.red)`;
                           : "border-theme-stroke hover:border-theme-secondary"
                       }`}
                     >
-                      <div className="text-title-2 text-theme-primary mb-1">
+                      <div
+                        className={`text-title-2 mb-1 ${
+                          formData.selectedToken === token
+                            ? "text-primary-1 font-semibold"
+                            : "text-theme-primary"
+                        }`}
+                      >
                         {token}
                       </div>
-                      <div className="text-caption-2 text-theme-tertiary">
+                      <div
+                        className={`text-caption-2 ${
+                          formData.selectedToken === token
+                            ? "text-primary-1"
+                            : "text-theme-tertiary"
+                        }`}
+                      >
                         {token === "BTC" && "Max 40X leverage"}
                         {token === "ETH" && "Max 25X leverage"}
                       </div>
@@ -495,17 +511,55 @@ plot(sma50, color=color.red)`;
                   {(["low", "medium", "high"] as RiskLevel[]).map((risk) => (
                     <button
                       key={risk}
-                      onClick={() => handleInputChange("riskLevel", risk)}
+                      onClick={() => {
+                        // Auto-adjust leverage when risk level changes
+                        if (formData.selectedToken) {
+                          const maxLeverage =
+                            formData.selectedToken === "BTC" ? 40 : 25;
+                          const riskMultiplier = {
+                            low: 0.3,
+                            medium: 0.6,
+                            high: 0.9,
+                          };
+                          const defaultLeverage = Math.round(
+                            maxLeverage * riskMultiplier[risk]
+                          );
+                          // Update both riskLevel and leverage in a single state update
+                          setFormData({
+                            ...formData,
+                            riskLevel: risk,
+                            leverage: defaultLeverage,
+                          });
+                        } else {
+                          // Only update riskLevel if no token is selected
+                          setFormData({
+                            ...formData,
+                            riskLevel: risk,
+                          });
+                        }
+                      }}
                       className={`p-4 rounded-xl border-2 transition-all ${
                         formData.riskLevel === risk
                           ? "border-primary-1 bg-primary-1/10"
                           : "border-theme-stroke hover:border-theme-secondary"
                       }`}
                     >
-                      <div className="text-title-2 text-theme-primary mb-1 capitalize">
+                      <div
+                        className={`text-title-2 mb-1 capitalize ${
+                          formData.riskLevel === risk
+                            ? "text-primary-1 font-semibold"
+                            : "text-theme-primary"
+                        }`}
+                      >
                         {risk}
                       </div>
-                      <div className="text-caption-2 text-theme-tertiary">
+                      <div
+                        className={`text-caption-2 ${
+                          formData.riskLevel === risk
+                            ? "text-primary-1"
+                            : "text-theme-tertiary"
+                        }`}
+                      >
                         {risk === "low" && "Conservative approach"}
                         {risk === "medium" && "Balanced risk-reward"}
                         {risk === "high" && "Aggressive trading"}
@@ -557,9 +611,12 @@ plot(sma50, color=color.red)`;
                       </div>
                       <button
                         onClick={() => {
-                          const maxLeverage = formData.selectedToken === "BTC" ? 40 : 25;
+                          const maxLeverage =
+                            formData.selectedToken === "BTC" ? 40 : 25;
                           const risks = { low: 0.3, medium: 0.6, high: 0.9 };
-                          const defaultLev = Math.round(maxLeverage * risks[formData.riskLevel]);
+                          const defaultLev = Math.round(
+                            maxLeverage * risks[formData.riskLevel]
+                          );
                           handleInputChange("leverage", defaultLev);
                         }}
                         className="text-caption-2 text-blue-500 hover:text-blue-600 transition-colors"
@@ -786,53 +843,22 @@ plot(sma50, color=color.red)`;
                     </Box>
                   </div>
 
-                  {/* Select Indicator and Timeframe */}
-                  <div className="mb-6 space-y-6">
-                    <div>
-                      <div className="text-base-2 text-theme-primary mb-3">
-                        Select Indicator
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        {(["9-50 EMA Cross-over", "RSI"] as string[]).map((indicator) => (
-                          <button
-                            key={indicator}
-                            onClick={() => handleInputChange("selectedIndicator", indicator)}
-                            className={`p-4 rounded-xl border-2 transition-all ${
-                              formData.selectedIndicator === indicator
-                                ? "border-primary-1 bg-primary-1/10"
-                                : "border-theme-stroke hover:border-theme-secondary"
-                            }`}
-                          >
-                            <div className="text-title-2 text-theme-primary">
-                              {indicator}
-                            </div>
-                          </button>
-                        ))}
-                      </div>
+                  {/* Add Custom Strategy Description */}
+                  <div className="mb-6 pb-6 border-b border-theme-stroke">
+                    <div className="text-base-2 text-theme-primary mb-2 font-semibold">
+                      Add Custom Strategy Description
                     </div>
-
-                    <div>
-                      <div className="text-base-2 text-theme-primary mb-3">
-                        Select Timeframe
-                      </div>
-                      <div className="grid grid-cols-4 gap-4">
-                        {(["5m", "15m", "1h", "4h"] as string[]).map((timeframe) => (
-                          <button
-                            key={timeframe}
-                            onClick={() => handleInputChange("selectedTimeframe", timeframe)}
-                            className={`p-4 rounded-xl border-2 transition-all ${
-                              formData.selectedTimeframe === timeframe
-                                ? "border-primary-1 bg-primary-1/10"
-                                : "border-theme-stroke hover:border-theme-secondary"
-                            }`}
-                          >
-                            <div className="text-title-2 text-theme-primary">
-                              {timeframe}
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                    <Field
+                      placeholder="Describe your custom technical strategy..."
+                      textarea
+                      value={formData.customTechnicalStrategy}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "customTechnicalStrategy",
+                          e.target.value
+                        )
+                      }
+                    />
                   </div>
 
                   {/* Pre-built Technical Strategies */}
@@ -848,6 +874,38 @@ plot(sma50, color=color.red)`;
                       selectedStrategies={formData.selectedTechnicalStrategies}
                       onToggle={handleTechnicalStrategyToggle}
                     />
+                  </div>
+
+                  {/* Timeframe */}
+                  <div className="text-base-2 text-theme-primary mb-3 font-semibold">
+                    Timeframe
+                  </div>
+                  <div className="grid grid-cols-4 gap-4">
+                    {(["5m", "15m", "1h", "4h"] as string[]).map(
+                      (timeframe) => (
+                        <button
+                          key={timeframe}
+                          onClick={() =>
+                            handleInputChange("selectedTimeframe", timeframe)
+                          }
+                          className={`p-4 rounded-xl border-2 transition-all ${
+                            formData.selectedTimeframe === timeframe
+                              ? "border-primary-1 bg-primary-1/10"
+                              : "border-theme-stroke hover:border-theme-secondary"
+                          }`}
+                        >
+                          <div
+                            className={`text-title-2 ${
+                              formData.selectedTimeframe === timeframe
+                                ? "text-primary-1 font-semibold"
+                                : "text-theme-primary"
+                            }`}
+                          >
+                            {timeframe}
+                          </div>
+                        </button>
+                      )
+                    )}
                   </div>
 
                   {/* Custom Technical Strategies - Show added ones */}
@@ -982,34 +1040,6 @@ plot(sma50, color=color.red)`;
                       </div>
                     </div>
                   )}
-
-                  {/* Add Custom Strategy Description */}
-                  <div className="pt-6">
-                    <div className="text-base-2 text-theme-primary mb-2 font-semibold">
-                      Add Custom Strategy Description
-                    </div>
-                    <Field
-                      placeholder="Describe your custom technical strategy..."
-                      textarea
-                      value={formData.customTechnicalStrategy}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "customTechnicalStrategy",
-                          e.target.value
-                        )
-                      }
-                    />
-
-                    {formData.customTechnicalStrategy.trim() && (
-                      <button
-                        onClick={handleGenerateAndBacktest}
-                        className="mt-3 w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors flex items-center justify-center gap-2"
-                      >
-                        <Icon className="w-5 h-5 fill-white" name="code" />
-                        Generate & Backtest
-                      </button>
-                    )}
-                  </div>
                 </div>
 
                 {/* Sentiment Agent */}
