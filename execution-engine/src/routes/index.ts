@@ -5,6 +5,7 @@ import agentRoutes from './agent';
 import strategyRoutes from './strategy';
 import userAgentConfigRoutes from './userAgentConfig';
 import hyperliquidRoutes from './exchange/hyperliquid';
+import indicatorRoutes from './indicator';
 
 const router = Router();
 
@@ -25,6 +26,9 @@ router.use('/api/user-agent-config', userAgentConfigRoutes);
 
 // Mount Hyperliquid routes
 router.use('/api/hyperliquid', hyperliquidRoutes);
+
+// Mount Indicator routes
+router.use('/api/indicators', indicatorRoutes);
 
 // API routes placeholder
 router.use('/api/v1', (req, res) => {
