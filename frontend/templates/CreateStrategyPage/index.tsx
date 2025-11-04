@@ -786,9 +786,58 @@ plot(sma50, color=color.red)`;
                     </Box>
                   </div>
 
+                  {/* Select Indicator and Timeframe */}
+                  <div className="mb-6 space-y-6">
+                    <div>
+                      <div className="text-base-2 text-theme-primary mb-3">
+                        Select Indicator
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        {(["9-50 EMA Cross-over", "RSI"] as string[]).map((indicator) => (
+                          <button
+                            key={indicator}
+                            onClick={() => handleInputChange("selectedIndicator", indicator)}
+                            className={`p-4 rounded-xl border-2 transition-all ${
+                              formData.selectedIndicator === indicator
+                                ? "border-primary-1 bg-primary-1/10"
+                                : "border-theme-stroke hover:border-theme-secondary"
+                            }`}
+                          >
+                            <div className="text-title-2 text-theme-primary">
+                              {indicator}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-base-2 text-theme-primary mb-3">
+                        Select Timeframe
+                      </div>
+                      <div className="grid grid-cols-4 gap-4">
+                        {(["5m", "15m", "1h", "4h"] as string[]).map((timeframe) => (
+                          <button
+                            key={timeframe}
+                            onClick={() => handleInputChange("selectedTimeframe", timeframe)}
+                            className={`p-4 rounded-xl border-2 transition-all ${
+                              formData.selectedTimeframe === timeframe
+                                ? "border-primary-1 bg-primary-1/10"
+                                : "border-theme-stroke hover:border-theme-secondary"
+                            }`}
+                          >
+                            <div className="text-title-2 text-theme-primary">
+                              {timeframe}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Pre-built Technical Strategies */}
-                  <div className="mb-6">
-                    <div className="text-base-2 text-theme-primary mb-3">
+                  <div className="mb-6 pb-6 border-b border-theme-stroke">
+                    <div className="text-base-2 text-theme-primary mb-3 font-semibold">
                       Pre-built Technical Strategies
                     </div>
                     <p className="text-caption-2 text-theme-secondary mb-4">
@@ -935,9 +984,9 @@ plot(sma50, color=color.red)`;
                   )}
 
                   {/* Add Custom Strategy Description */}
-                  <div>
-                    <div className="text-base-2 text-theme-primary mb-2">
-                      Or Add Custom Strategy Description
+                  <div className="pt-6">
+                    <div className="text-base-2 text-theme-primary mb-2 font-semibold">
+                      Add Custom Strategy Description
                     </div>
                     <Field
                       placeholder="Describe your custom technical strategy..."
