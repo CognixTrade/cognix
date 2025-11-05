@@ -7,7 +7,7 @@ import logger from '../../utils/logger';
  * @swagger
  * /api/strategies/user/{userId}/strategy/{strategyId}:
  *   get:
- *     summary: Fetch single strategy by userId and strategyId with all agent configs populated
+ *     summary: Fetch single strategy by userId and strategyId with all agent configs and indicators populated
  *     tags: [Strategies]
  *     parameters:
  *       - in: path
@@ -24,7 +24,7 @@ import logger from '../../utils/logger';
  *         description: Strategy ID
  *     responses:
  *       200:
- *         description: Strategy details with populated agent configs
+ *         description: Strategy details with populated agent configs and indicators
  *         content:
  *           application/json:
  *             schema:
@@ -38,6 +38,14 @@ import logger from '../../utils/logger';
  *                   type: string
  *                 description:
  *                   type: string
+ *                 cryptoAsset:
+ *                   type: string
+ *                 timeframe:
+ *                   type: string
+ *                 leverage:
+ *                   type: number
+ *                 depositAmount:
+ *                   type: number
  *                 risk:
  *                   type: string
  *                   enum: [High, Medium, Low]
@@ -53,7 +61,7 @@ import logger from '../../utils/logger';
  *                       customPrompt:
  *                         type: string
  *                       code:
- *                         type: string
+ *                         type: object
  *                       agentId:
  *                         type: object
  *                         properties:
@@ -65,6 +73,11 @@ import logger from '../../utils/logger';
  *                             type: string
  *                           prompt:
  *                             type: string
+ *                 indicators:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: Array of indicator IDs associated with the strategy
  *                 createdAt:
  *                   type: string
  *                   format: date-time
@@ -114,6 +127,10 @@ export const getByUserIdAndStrategyId = async (req: Request, res: Response): Pro
       userId: strategy.userId,
       name: strategy.name,
       description: strategy.description,
+      cryptoAsset: strategy.cryptoAsset,
+      timeframe: strategy.timeframe,
+      leverage: strategy.leverage,
+      depositAmount: strategy.depositAmount,
       risk: strategy.risk,
       agentConfigs: strategy.agentConfigs.map((config: any) => ({
         _id: config._id,
@@ -127,6 +144,7 @@ export const getByUserIdAndStrategyId = async (req: Request, res: Response): Pro
           prompt: config.agentId.prompt,
         },
       })),
+      indicators: strategy.indicators,
       createdAt: strategy.createdAt,
       updatedAt: strategy.updatedAt,
     };

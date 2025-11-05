@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { Strategy } from '../../models/strategy.model';
 import { UserAgentConfig } from '../../models/userAgentConfig.model';
 import { Agent } from '../../models/agent.model';
+import { Indicator } from '../../models/indicator.model';
 import { ForbiddenError, NotFoundError, ValidationError } from '../../utils/errors';
 import { AuthenticatedRequest } from '../../middleware/auth';
 import logger from '../../utils/logger';
@@ -10,7 +11,7 @@ import logger from '../../utils/logger';
  * @swagger
  * /api/strategies/strategy/{strategyId}:
  *   put:
- *     summary: Update strategy metadata or its agent configs
+ *     summary: Update strategy metadata, agent configs, or indicators
  *     tags: [Strategies]
  *     security:
  *       - bearerAuth: []
@@ -34,6 +35,18 @@ import logger from '../../utils/logger';
  *               description:
  *                 type: string
  *                 description: Strategy description
+ *               cryptoAsset:
+ *                 type: string
+ *                 description: Cryptocurrency asset (e.g., BTC, ETH)
+ *               timeframe:
+ *                 type: string
+ *                 description: Trading timeframe (e.g., 1h, 4h, 1d)
+ *               leverage:
+ *                 type: number
+ *                 description: Leverage multiplier for the strategy
+ *               depositAmount:
+ *                 type: number
+ *                 description: Initial deposit amount
  *               risk:
  *                 type: string
  *                 enum: [High, Medium, Low]
@@ -60,6 +73,11 @@ import logger from '../../utils/logger';
  *                     code:
  *                       type: object
  *                       description: Optional JSON code configuration
+ *               indicators:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of indicator IDs to associate with the strategy
  *     responses:
  *       200:
  *         description: Strategy updated successfully
@@ -80,7 +98,21 @@ import logger from '../../utils/logger';
  *                       type: string
  *                     description:
  *                       type: string
+ *                     cryptoAsset:
+ *                       type: string
+ *                     timeframe:
+ *                       type: string
+ *                     leverage:
+ *                       type: number
+ *                     depositAmount:
+ *                       type: number
+ *                     risk:
+ *                       type: string
  *                     agentConfigs:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     indicators:
  *                       type: array
  *                       items:
  *                         type: string
@@ -102,7 +134,7 @@ import logger from '../../utils/logger';
 export const updateStrategy = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { strategyId } = req.params;
-    const { userId, name, description, agents, risk } = req.body;
+    const { userId, name, description, agents, risk, cryptoAsset, timeframe, leverage, depositAmount, indicators } = req.body;
     // const currentUserId = req.user?.id;
 
     // if (!currentUserId) {
@@ -122,6 +154,20 @@ export const updateStrategy = async (req: AuthenticatedRequest, res: Response): 
     // Update basic fields
     if (name) strategy.name = name;
     if (description !== undefined) strategy.description = description;
+    if (cryptoAsset) strategy.cryptoAsset = cryptoAsset;
+    if (timeframe) strategy.timeframe = timeframe;
+    if (leverage !== undefined) {
+      if (typeof leverage !== 'number' || leverage < 0) {
+        throw new ValidationError('Leverage must be a non-negative number');
+      }
+      strategy.leverage = leverage;
+    }
+    if (depositAmount !== undefined) {
+      if (typeof depositAmount !== 'number' || depositAmount <= 0) {
+        throw new ValidationError('Deposit amount must be a positive number');
+      }
+      strategy.depositAmount = depositAmount;
+    }
     if (risk) {
       if (!['High', 'Medium', 'Low'].includes(risk)) {
         throw new ValidationError('Risk must be one of: High, Medium, Low');
@@ -172,6 +218,18 @@ export const updateStrategy = async (req: AuthenticatedRequest, res: Response): 
       strategy.agentConfigs = agentConfigs;
     }
 
+    // Update indicators if provided
+    if (indicators && Array.isArray(indicators)) {
+      // Verify all indicators exist
+      const existingIndicators = await Indicator.find({
+        _id: { $in: indicators },
+      });
+      if (existingIndicators.length !== indicators.length) {
+        throw new ValidationError('One or more indicators not found');
+      }
+      strategy.indicators = indicators;
+    }
+
     strategy.updatedAt = new Date();
     const updatedStrategy = await strategy.save();
 
@@ -187,8 +245,13 @@ export const updateStrategy = async (req: AuthenticatedRequest, res: Response): 
         _id: updatedStrategy._id,
         name: updatedStrategy.name,
         description: updatedStrategy.description,
+        cryptoAsset: updatedStrategy.cryptoAsset,
+        timeframe: updatedStrategy.timeframe,
+        leverage: updatedStrategy.leverage,
+        depositAmount: updatedStrategy.depositAmount,
         risk: updatedStrategy.risk,
         agentConfigs: updatedStrategy.agentConfigs,
+        indicators: updatedStrategy.indicators,
         createdAt: updatedStrategy.createdAt,
         updatedAt: updatedStrategy.updatedAt,
       },

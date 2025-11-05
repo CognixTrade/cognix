@@ -27,6 +27,10 @@ import logger from "../../utils/logger";
  *               - agents
  *               - userId
  *               - risk
+ *               - cryptoAsset
+ *               - timeframe
+ *               - leverage
+ *               - depositAmount
  *             properties:
  *               name:
  *                 type: string
@@ -40,6 +44,22 @@ import logger from "../../utils/logger";
  *                 type: string
  *                 description: Description of the strategy
  *                 example: "Goes long when EMA7 crosses EMA30 upward"
+ *               cryptoAsset:
+ *                 type: string
+ *                 description: Cryptocurrency asset (e.g., BTC, ETH)
+ *                 example: "BTC"
+ *               timeframe:
+ *                 type: string
+ *                 description: Trading timeframe (e.g., 1h, 4h, 1d)
+ *                 example: "1h"
+ *               leverage:
+ *                 type: number
+ *                 description: Leverage multiplier for the strategy
+ *                 example: 2.5
+ *               depositAmount:
+ *                 type: number
+ *                 description: Initial deposit amount
+ *                 example: 1000
  *               risk:
  *                 type: string
  *                 enum: [High, Medium, Low]
@@ -93,6 +113,14 @@ import logger from "../../utils/logger";
  *                       type: string
  *                     description:
  *                       type: string
+ *                     cryptoAsset:
+ *                       type: string
+ *                     timeframe:
+ *                       type: string
+ *                     leverage:
+ *                       type: number
+ *                     depositAmount:
+ *                       type: number
  *                     risk:
  *                       type: string
  *                     agentConfigs:
@@ -121,7 +149,7 @@ export const createStrategy = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { name, description, agents, userId, risk, indicators } = req.body;
+    const { name, description, agents, userId, risk, indicators, cryptoAsset, timeframe, leverage, depositAmount } = req.body;
     // const userId = req.user?.id;
 
     if (!userId) {
@@ -133,6 +161,22 @@ export const createStrategy = async (
       throw new ValidationError(
         "Missing required fields: name and agents array"
       );
+    }
+
+    // Validate new required fields
+    if (!cryptoAsset || !timeframe || leverage === undefined || depositAmount === undefined) {
+      throw new ValidationError(
+        "Missing required fields: cryptoAsset, timeframe, leverage, and depositAmount"
+      );
+    }
+
+    // Validate leverage and depositAmount are numbers
+    if (typeof leverage !== "number" || leverage < 0) {
+      throw new ValidationError("Leverage must be a non-negative number");
+    }
+
+    if (typeof depositAmount !== "number" || depositAmount <= 0) {
+      throw new ValidationError("Deposit amount must be a positive number");
     }
 
     // Validate risk field
@@ -182,6 +226,10 @@ export const createStrategy = async (
       userId,
       name,
       description,
+      cryptoAsset,
+      timeframe,
+      leverage,
+      depositAmount,
       risk,
       agentConfigs: [],
       indicators: indicatorIds,
@@ -227,6 +275,10 @@ export const createStrategy = async (
         _id: savedStrategy._id,
         name: savedStrategy.name,
         description: savedStrategy.description,
+        cryptoAsset: savedStrategy.cryptoAsset,
+        timeframe: savedStrategy.timeframe,
+        leverage: savedStrategy.leverage,
+        depositAmount: savedStrategy.depositAmount,
         risk: savedStrategy.risk,
         agentConfigs: agentConfigs,
         indicators: indicatorIds,

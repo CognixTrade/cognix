@@ -8,7 +8,7 @@ import logger from '../../utils/logger';
  * @swagger
  * /api/strategies/user/{userId}:
  *   get:
- *     summary: Fetch all strategies of a user with populated agent configs
+ *     summary: Fetch all strategies of a user with populated agent configs and indicators
  *     tags: [Strategies]
  *     security:
  *       - bearerAuth: []
@@ -31,10 +31,20 @@ import logger from '../../utils/logger';
  *                 properties:
  *                   _id:
  *                     type: string
+ *                   userId:
+ *                     type: string
  *                   name:
  *                     type: string
  *                   description:
  *                     type: string
+ *                   cryptoAsset:
+ *                     type: string
+ *                   timeframe:
+ *                     type: string
+ *                   leverage:
+ *                     type: number
+ *                   depositAmount:
+ *                     type: number
  *                   risk:
  *                     type: string
  *                     enum: [High, Medium, Low]
@@ -64,6 +74,11 @@ import logger from '../../utils/logger';
  *                               type: number
  *                             prompt:
  *                               type: string
+ *                   indicators:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     description: Array of indicator IDs associated with the strategy
  *                   createdAt:
  *                     type: string
  *                     format: date-time
@@ -104,6 +119,10 @@ export const getUserStrategies = async (req: Request, res: Response): Promise<vo
       userId: strategy.userId,
       name: strategy.name,
       description: strategy.description,
+      cryptoAsset: strategy.cryptoAsset,
+      timeframe: strategy.timeframe,
+      leverage: strategy.leverage,
+      depositAmount: strategy.depositAmount,
       risk: strategy.risk,
       agentConfigs: strategy.agentConfigs.map((config: any) => ({
         _id: config._id,
@@ -118,6 +137,7 @@ export const getUserStrategies = async (req: Request, res: Response): Promise<vo
           prompt: config.agentId.prompt,
         },
       })),
+      indicators: strategy.indicators,
       createdAt: strategy.createdAt,
       updatedAt: strategy.updatedAt,
     }));

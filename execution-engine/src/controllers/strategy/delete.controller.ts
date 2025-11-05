@@ -9,7 +9,7 @@ import logger from '../../utils/logger';
  * @swagger
  * /api/strategies/strategy/{strategyId}:
  *   delete:
- *     summary: Delete a strategy and all its linked user agent configs
+ *     summary: Delete a strategy and all its linked user agent configs and indicators
  *     tags: [Strategies]
  *     security:
  *       - bearerAuth: []
