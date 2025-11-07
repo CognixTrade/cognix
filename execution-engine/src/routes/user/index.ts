@@ -13,7 +13,7 @@ router.post('/register', asyncHandler(registerUser));
 // PUT /api/v1/user/:id/autonomous - Toggle autonomous mode
 router.put('/:id/autonomous', asyncHandler(toggleAutonomous));
 
-// GET /api/v1/user/:uniqueWalletId - Get user by wallet ID
-router.get('/:uniqueWalletId', asyncHandler(getUserByWalletId));
+// GET /api/v1/user/:id - Get user by ID
+router.get('/:id', asyncHandler(getUserByWalletId));
 
 export default router;

@@ -3,50 +3,53 @@ import { User } from "../../models/user.model";
 
 /**
  * @swagger
- * /api/v1/user/{uniqueWalletId}:
+ * /api/v1/user/{id}:
  *   get:
- *     summary: Get user by unique wallet ID
+ *     summary: Get user by ID
  *     tags: [Users]
  *     parameters:
  *       - in: path
- *         name: uniqueWalletId
+ *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: Unique wallet ID (e.g., Privy DID)
+ *         description: User ID (_id)
  *     responses:
  *       200:
  *         description: User found
  *       400:
- *         description: Missing uniqueWalletId
+ *         description: Missing user ID
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Server error
  */
 export const getUserByWalletId = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const { uniqueWalletId } = req.params;
+    const { id } = req.params;
 
-    if (!uniqueWalletId) {
+    if (!id) {
       res.status(400).json({
-        error: "uniqueWalletId parameter is required",
+        error: "User ID parameter is required",
       });
+      return;
     }
 
-    const user = await User.findOne({ uniqueWalletId }).lean();;
+    const user = await User.findById(id).lean();
 
     if (!user) {
-      res.status(200).json({
+      res.status(404).json({
         success: false,
         exists: false,
         message: "User not found",
       });
+      return;
     }
 
     if (user.apiWallet?.privateKey) {
-      const pk = user.apiWallet.privateKey;
       user.apiWallet.privateKey = "********";
     }
 
