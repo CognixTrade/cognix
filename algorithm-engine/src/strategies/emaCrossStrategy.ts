@@ -22,6 +22,7 @@ export class EmaCrossStrategy extends BaseStrategy {
   }
 
   async evaluate(candles: Candle[]): Promise<"BUY" | "SELL" | "HOLD"> {
+    console.log(candles.length)
     if (candles.length < this.longPeriod + 1) return "HOLD";
 
     const closes = candles.map(c => c.c);
