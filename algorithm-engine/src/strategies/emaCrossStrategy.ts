@@ -1,0 +1,58 @@
+import { BaseStrategy } from './baseStrategy.ts';
+
+export class EmaCrossStrategy extends BaseStrategy {
+  private shortPeriod: number;
+  private longPeriod: number;
+  private lastSignal: "BUY" | "SELL" | "HOLD" = "HOLD";
+  private lastCrossoverIndex: number = -1;
+
+  constructor(shortPeriod: number, longPeriod: number) {
+    super(`EMA_CROSS_${shortPeriod}_${longPeriod}`, `EMA`);
+    this.shortPeriod = shortPeriod;
+    this.longPeriod = longPeriod;
+  }
+
+  private ema(values: number[], period: number): number {
+    const k = 2 / (period + 1);
+    let ema = values[0];
+    for (let i = 1; i < values.length; i++) {
+      ema = values[i] * k + ema * (1 - k);
+    }
+    return ema;
+  }
+
+  async evaluate(candles: any[]): Promise<"BUY" | "SELL" | "HOLD"> {
+    if (candles.length < this.longPeriod + 1) return "HOLD";
+
+    const closes = candles.map(c => c.close);
+    const lastIndex = candles.length - 1;
+
+    // Compute EMAs for previous and current candles
+    const emaShortPrev = this.ema(closes.slice(-(this.longPeriod + 1), -1), this.shortPeriod);
+    const emaLongPrev = this.ema(closes.slice(-(this.longPeriod + 1), -1), this.longPeriod);
+
+    const emaShortCurr = this.ema(closes.slice(-this.longPeriod), this.shortPeriod);
+    const emaLongCurr = this.ema(closes.slice(-this.longPeriod), this.longPeriod);
+
+    let signal: "BUY" | "SELL" | "HOLD" = "HOLD";
+
+    // Detect new crossovers
+    if (emaShortPrev <= emaLongPrev && emaShortCurr > emaLongCurr) {
+      signal = "BUY";
+    } else if (emaShortPrev >= emaLongPrev && emaShortCurr < emaLongCurr) {
+      signal = "SELL";
+    }
+
+    // Only return a signal if it's new (not same index or same signal)
+    if (
+      signal !== "HOLD" &&
+      (this.lastCrossoverIndex !== lastIndex || this.lastSignal !== signal)
+    ) {
+      this.lastSignal = signal;
+      this.lastCrossoverIndex = lastIndex;
+      return signal;
+    }
+
+    return "HOLD";
+  }
+}
