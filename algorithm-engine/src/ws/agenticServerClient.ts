@@ -54,11 +54,9 @@ export function invokeAgenticServer(userId: string, strategyId: string, timefram
 
   const payload = {
     user_id: userId,
-    strategy_id: strategyId,
-    timeframe: timeframe,
-    asset_symbol: assetSymbol,
-    indicator_name: indicatorName,
-    direction: direction
+    thread_id: strategyId,
+    message: `analyse ${direction} side of ${assetSymbol} in ${timeframe} interval and take trade if needed`
+    
   };
 
   ws.send(JSON.stringify(payload));

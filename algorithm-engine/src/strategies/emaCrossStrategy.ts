@@ -5,7 +5,6 @@ export class EmaCrossStrategy extends BaseStrategy {
   private shortPeriod: number;
   private longPeriod: number;
   private lastCrossoverIndex: number = -1;
-
   constructor(shortPeriod: number, longPeriod: number) {
     super(`EMA_CROSS_${shortPeriod}_${longPeriod}`, `EMA`);
     this.shortPeriod = shortPeriod;
