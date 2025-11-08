@@ -2,7 +2,7 @@ from ..models.state_models import SupervisorState
 from ..agents.base import build_agent_state
 # from ..tools.tool_wrappers import invoke_agent
 from ..mcp.clients import init_clients
-
+from ..users.users import get_agent_weight_and_prompt , get_strategy_details
 from langgraph.prebuilt import create_react_agent
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
@@ -14,10 +14,21 @@ llm=init_chat_model("openai:gpt-4o-mini")
 
 async def websearch_agent_node(state: SupervisorState) -> SupervisorState:
     """Run the web search agent with the current task and update state."""
+    user_id = state.user_detail              # from state
+    strategy_id = state.thread_id            # from state
+    agent_name = "websearch"                   # or "technical" if finance = technical
+
+    agent_meta = get_agent_weight_and_prompt(user_id, strategy_id, agent_name)
+
+    if "error" in agent_meta:
+        raise ValueError(agent_meta["error"])
+
+    user_prompt = agent_meta.get("customPrompt") or ""
     sysprompt_web_search = f"""
 You are a Web Search AI Assistant.
 You can access the internet via the web search tool to gather the most relevant and 
 comprehensive information.
+user_request: {user_prompt}
 context so far is : {str(state.context)}
 
 - before making decision go through context thoroughly

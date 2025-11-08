@@ -90,6 +90,7 @@ async def chat_endpoint(websocket: WebSocket):
                 request_summary=memory["request_summary"] if memory else None,
                 response_summary=memory["response_summary"] if memory else None,
                 user_detail=user_id,
+                thread_id=thread_id,
             )
             # print(incoming_state)
 
@@ -97,6 +98,7 @@ async def chat_endpoint(websocket: WebSocket):
             final_state = None
             kwargs={
                 "user_id":user_id,
+                
             }
             try:
                 async for chunk in run_sync(incoming_state, thread_id=thread_id, **kwargs):

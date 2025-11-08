@@ -152,7 +152,7 @@ def place_trade(
         side (str): "buy" or "sell".
         sl (float, optional): Stop-loss price. Defaults to None.
         tp (float, optional): Take-profit price. Defaults to None.
-        privateKey (str, optional): Private key for authentication. Defaults to DEFAULT_PRIVATE_KEY.
+        privateKey (str, optional): Private key for authentication.
 
     Returns:
         dict: {
