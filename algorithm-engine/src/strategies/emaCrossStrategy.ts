@@ -1,9 +1,9 @@
+import type { Candle } from '../types/index.ts';
 import { BaseStrategy } from './baseStrategy.ts';
 
 export class EmaCrossStrategy extends BaseStrategy {
   private shortPeriod: number;
   private longPeriod: number;
-  private lastSignal: "BUY" | "SELL" | "HOLD" = "HOLD";
   private lastCrossoverIndex: number = -1;
 
   constructor(shortPeriod: number, longPeriod: number) {
@@ -21,10 +21,10 @@ export class EmaCrossStrategy extends BaseStrategy {
     return ema;
   }
 
-  async evaluate(candles: any[]): Promise<"BUY" | "SELL" | "HOLD"> {
+  async evaluate(candles: Candle[]): Promise<"BUY" | "SELL" | "HOLD"> {
     if (candles.length < this.longPeriod + 1) return "HOLD";
 
-    const closes = candles.map(c => c.close);
+    const closes = candles.map(c => c.c);
     const lastIndex = candles.length - 1;
 
     // Compute EMAs for previous and current candles
@@ -38,17 +38,18 @@ export class EmaCrossStrategy extends BaseStrategy {
 
     // Detect new crossovers
     if (emaShortPrev <= emaLongPrev && emaShortCurr > emaLongCurr) {
+      console.log("🚀 Golden Cross detected!");
       signal = "BUY";
     } else if (emaShortPrev >= emaLongPrev && emaShortCurr < emaLongCurr) {
+      console.log("💀 Death Cross detected!");
       signal = "SELL";
     }
 
     // Only return a signal if it's new (not same index or same signal)
     if (
       signal !== "HOLD" &&
-      (this.lastCrossoverIndex !== lastIndex || this.lastSignal !== signal)
+      (this.lastCrossoverIndex !== lastIndex)
     ) {
-      this.lastSignal = signal;
       this.lastCrossoverIndex = lastIndex;
       return signal;
     }

@@ -12,6 +12,7 @@ export function startHyperliquidFeed() {
     log("🔗 Connected to Hyperliquid WS");
 
     const subscriptions = [
+      { type: "candle", coin: "BTC", interval: "1m" },
       { type: "candle", coin: "BTC", interval: "5m" },
       { type: "candle", coin: "BTC", interval: "15m" },
       { type: "candle", coin: "BTC", interval: "1h" },
@@ -27,7 +28,7 @@ export function startHyperliquidFeed() {
       );
     }
 
-    log("📡 Subscribed to BTC candles (5m, 4h)");
+    log("📡 Subscribed to BTC candles (1m, 5m, 15m, 1h, 4h)");
   });
 
   ws.on("message", (msg) => {

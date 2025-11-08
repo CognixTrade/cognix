@@ -3,10 +3,10 @@ import { log } from "../utils/logger.ts";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-const WS_URL = process.env.NEXT_PUBLIC_AI_BASE_URL;
+const WS_URL = process.env.AI_BASE_URL;
 
 if (!WS_URL) {
-  throw new Error("❌ Missing NEXT_PUBLIC_AI_BASE_URL in environment variables");
+  throw new Error("❌ Missing AI_BASE_URL in environment variables");
 }
 
 let ws: WebSocket | null = null;
