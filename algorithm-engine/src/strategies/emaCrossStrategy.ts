@@ -1,5 +1,5 @@
-import type { Candle } from '../types/index.ts';
-import { BaseStrategy } from './baseStrategy.ts';
+import type { Candle } from '../types/index';
+import { BaseStrategy } from './baseStrategy';
 
 export class EmaCrossStrategy extends BaseStrategy {
   private shortPeriod: number;

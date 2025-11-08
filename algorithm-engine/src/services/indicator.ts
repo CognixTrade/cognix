@@ -1,5 +1,5 @@
-import { getUsers } from "./user.ts";
-import { getStrategies } from "./strategy.ts";
+import { getUsers } from "./user";
+import { getStrategies } from "./strategy";
 
 /**
  * Fetch all users and their strategies that include a given indicatorId

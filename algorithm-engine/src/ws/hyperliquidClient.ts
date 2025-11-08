@@ -1,7 +1,7 @@
 import WebSocket from "ws";
-import { handleCandleUpdate } from "../engine/strategyEngine.ts";
-import { log } from "../utils/logger.ts";
-import type { CandleMessage } from "../types/index.ts";
+import { handleCandleUpdate } from "../engine/strategyEngine";
+import { log } from "../utils/logger";
+import type { CandleMessage } from "../types/index";
 
 const WS_URL = "wss://api.hyperliquid.xyz/ws";
 

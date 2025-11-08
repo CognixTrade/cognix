@@ -1,9 +1,9 @@
-import { pushCandle, getRecentCandles } from "../redis/candleStore.ts";
-import { EmaCrossStrategy } from "../strategies/emaCrossStrategy.ts";
-import { triggerQueue } from "../config/index.ts";
-import { log } from "../utils/logger.ts";
-import type { Candle } from "../types/index.ts";
-import { getUsersAndStrategiesByIndicator } from "../services/indicator.ts";
+import { pushCandle, getRecentCandles } from "../redis/candleStore";
+import { EmaCrossStrategy } from "../strategies/emaCrossStrategy";
+import { triggerQueue } from "../config/index";
+import { log } from "../utils/logger";
+import type { Candle } from "../types/index";
+import { getUsersAndStrategiesByIndicator } from "../services/indicator";
 
 const EMA_9_50_INDICATOR_ID = "690a5940d863d469e89f962f";
 const strategyInstance = new EmaCrossStrategy(9, 50);

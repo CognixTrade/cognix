@@ -1,14 +1,14 @@
 {
   "name": "algorithm-engine",
   "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
+  "main": "dist/index.js",
   "description": "",
   "author": "",
   "license": "ISC",
   "scripts": {
     "dev": "nodemon --watch src --exec ts-node src/index.ts",
     "build": "tsc",
+    "start": "node dist/index.js",
     "start:redis": "docker compose up -d redis",
     "stop:redis": "docker compose down",
     "redis:logs": "docker logs -f redis-local",

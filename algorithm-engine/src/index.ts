@@ -1,6 +1,6 @@
-import { startHyperliquidFeed } from './ws/hyperliquidClient.ts';
-import { startExecutionWorker } from './executor/worker.ts';
-import { startAgenticWebSocket } from './ws/agenticServerClient.ts';
+import { startHyperliquidFeed } from './ws/hyperliquidClient';
+import { startExecutionWorker } from './executor/worker';
+import { startAgenticWebSocket } from './ws/agenticServerClient';
 import dotenv from "dotenv";
 
 async function main() {

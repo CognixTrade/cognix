@@ -1,6 +1,6 @@
-import { redis } from '../config/index.ts';
-import type { Candle } from '../types/index.ts';
-import { log } from "../utils/logger.ts";
+import { redis } from '../config/index';
+import type { Candle } from '../types/index';
+import { log } from "../utils/logger";
 
 export async function pushCandle(symbol: string, interval: string, candle: Candle) {
   const key = `candle:${symbol}:${interval}`;

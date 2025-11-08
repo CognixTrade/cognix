@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 // Read Redis connection from env (for both local and deployed)
-const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379";
+const REDIS_URL = process.env["REDIS_URL"] || "redis://127.0.0.1:6379";
 
 // Create a single shared Redis connection
 const connection = new Redis(REDIS_URL, {

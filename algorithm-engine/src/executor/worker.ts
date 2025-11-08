@@ -1,6 +1,6 @@
-import { getWorker } from '../config/index.ts';
-import { log } from '../utils/logger.ts';
-import { invokeAgenticServer } from '../ws/agenticServerClient.ts';
+import { getWorker } from '../config/index';
+import { log } from '../utils/logger';
+import { invokeAgenticServer } from '../ws/agenticServerClient';
 
 interface ExecutionJobData {
   strategyId: string;
