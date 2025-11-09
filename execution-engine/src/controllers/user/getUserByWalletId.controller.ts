@@ -3,17 +3,17 @@ import { User } from "../../models/user.model";
 
 /**
  * @swagger
- * /api/v1/user/{id}:
+ * /api/v1/user/{walletId}/walletId:
  *   get:
- *     summary: Get user by ID
+ *     summary: Get user by wallet ID
  *     tags: [Users]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: walletId
  *         required: true
  *         schema:
  *           type: string
- *         description: User ID (_id)
+ *         description: Wallet ID (did:privy:...)
  *     responses:
  *       200:
  *         description: User found
@@ -29,16 +29,16 @@ export const getUserByWalletId = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { id } = req.params;
+    const { walletId } = req.params;
 
-    if (!id) {
+    if (!walletId) {
       res.status(400).json({
-        error: "User ID parameter is required",
+        error: "Wallet ID parameter is required",
       });
       return;
     }
 
-    const user = await User.findById(id).lean();
+    const user = await User.findOne({ uniqueWalletId: walletId }).lean();
 
     if (!user) {
       res.status(404).json({
@@ -59,9 +59,9 @@ export const getUserByWalletId = async (
       data: user,
     });
   } catch (err: any) {
-    console.error("Error fetching user:", err);
+    console.error("Error fetching user with walletId:", err);
     res.status(500).json({
-      error: "Failed to fetch user",
+      error: "Failed to fetch user with walletId",
       message: err.message,
     });
   }
