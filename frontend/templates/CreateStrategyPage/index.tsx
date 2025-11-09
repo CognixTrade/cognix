@@ -18,7 +18,6 @@ import {
   Strategy,
   RiskLevel,
   VisibilityType,
-  TECHNICAL_STRATEGIES,
   TechnicalStrategy,
   AgentConfig,
   BacktestResult,
@@ -27,12 +26,15 @@ import TechnicalStrategySelector from "./TechnicalStrategySelector";
 import { getAllAgents } from "../../services/agents.service";
 import { createStrategy } from "../../services/strategy.service";
 import { getUserId } from "../../utils/userStorage";
+import { getAllIndicators } from "../../services/indicators.service";
 
 const CreateStrategyPage = () => {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [agents, setAgents] = useState<any[]>([]);
   const [loadingAgents, setLoadingAgents] = useState(true);
+  const [indicators, setIndicators] = useState<any[]>([]);
+  const [loadingIndicators, setLoadingIndicators] = useState(true);
   const [formData, setFormData] = useState({
     // Page 1
     name: "",
@@ -96,6 +98,22 @@ const CreateStrategyPage = () => {
     fetchAgents();
   }, []);
 
+  // Fetch all indicators on component mount
+  useEffect(() => {
+    const fetchIndicators = async () => {
+      try {
+        setLoadingIndicators(true);
+        const response = await getAllIndicators();
+        setIndicators(response);
+      } catch (error) {
+        console.error("Failed to fetch indicators:", error);
+      } finally {
+        setLoadingIndicators(false);
+      }
+    };
+    fetchIndicators();
+  }, []);
+
   const handleInputChange = (field: string, value: any) => {
     setFormData({ ...formData, [field]: value });
   };
@@ -115,15 +133,17 @@ const CreateStrategyPage = () => {
   };
 
   const handleTechnicalStrategyToggle = (strategy: TechnicalStrategy) => {
+    const getStrategyId = (s: any) => s._id || s.id;
+    const strategyId = getStrategyId(strategy);
     const isSelected = formData.selectedTechnicalStrategies.some(
-      (s) => s.id === strategy.id
+      (s) => getStrategyId(s) === strategyId
     );
     if (isSelected) {
       setFormData({
         ...formData,
         selectedTechnicalStrategies:
           formData.selectedTechnicalStrategies.filter(
-            (s) => s.id !== strategy.id
+            (s) => getStrategyId(s) !== strategyId
           ),
       });
     } else {
@@ -243,10 +263,11 @@ plot(sma50, color=color.red)`;
   };
 
   const handleRemoveStrategy = (strategyId: string) => {
+    const getStrategyId = (s: any) => s._id || s.id;
     setFormData({
       ...formData,
       selectedTechnicalStrategies: formData.selectedTechnicalStrategies.filter(
-        (s) => s.id !== strategyId
+        (s) => getStrategyId(s) !== strategyId
       ),
     });
   };
@@ -306,11 +327,8 @@ plot(sma50, color=color.red)`;
         agentConfigs.push({
           agentId: technicalAgent._id,
           votingPower: technicalWeightage / 100, // Convert percentage to decimal
-          customPrompt: formData.technical?.prompt || "",
-          code:
-            formData.selectedTechnicalStrategies.length > 0
-              ? JSON.stringify(formData.selectedTechnicalStrategies)
-              : {},
+          customPrompt: formData.customTechnicalStrategy || "",
+          code: {},
         });
       }
 
@@ -340,17 +358,19 @@ plot(sma50, color=color.red)`;
         risk:
           formData.riskLevel.charAt(0).toUpperCase() +
           formData.riskLevel.slice(1), // Capitalize first letter
-        indicators: formData.selectedTechnicalStrategies,
+        indicators: formData.selectedTechnicalStrategies.map(
+          (strategy) => strategy._id || strategy.id
+        ),
         cryptoAsset: formData.selectedToken,
         timeframe: formData.selectedTimeframe,
         leverage: formData.leverage,
-        depositAmount: formData.depositAmount,
+        depositAmount: Number(formData.depositAmount),
         agents: agentConfigs,
       };
 
       console.log("Agent configs built:", agentConfigs);
       console.log("Form data:", formData);
-      console.log("❤️❤️Strategy data to send:", strategyData);
+      console.log("Strategy data to send:", strategyData);
 
       const userId = getUserId();
 
@@ -361,7 +381,7 @@ plot(sma50, color=color.red)`;
         return;
       }
 
-      // const response = await createStrategy(userId, strategyData);
+      const response = await createStrategy(userId, strategyData);
 
       console.log("Strategy created successfully:", response);
       router.push("/strategies");
@@ -874,11 +894,19 @@ plot(sma50, color=color.red)`;
                     <p className="text-caption-2 text-theme-secondary mb-4">
                       Select one or more technical analysis strategies
                     </p>
-                    <TechnicalStrategySelector
-                      strategies={TECHNICAL_STRATEGIES}
-                      selectedStrategies={formData.selectedTechnicalStrategies}
-                      onToggle={handleTechnicalStrategyToggle}
-                    />
+                    {loadingIndicators ? (
+                      <div className="flex justify-center py-8">
+                        <div className="w-8 h-8 border-4 border-primary-1 border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    ) : (
+                      <TechnicalStrategySelector
+                        strategies={indicators}
+                        selectedStrategies={
+                          formData.selectedTechnicalStrategies
+                        }
+                        onToggle={handleTechnicalStrategyToggle}
+                      />
+                    )}
                   </div>
 
                   {/* Timeframe */}
@@ -924,124 +952,127 @@ plot(sma50, color=color.red)`;
                       <div className="space-y-3">
                         {formData.selectedTechnicalStrategies
                           .filter((t) => t.isCustom)
-                          .map((tech) => (
-                            <div
-                              key={tech.id}
-                              className="p-4 rounded-xl border border-blue-500 bg-blue-500/5"
-                            >
-                              <div className="flex items-start justify-between mb-3">
-                                <div className="flex-1">
-                                  <div className="text-base-2 text-theme-primary mb-1 font-semibold">
-                                    {tech.name}
-                                  </div>
-                                  <div className="text-caption-2 text-theme-secondary">
-                                    {tech.description}
-                                  </div>
-                                </div>
-                                <button
-                                  onClick={() => handleRemoveStrategy(tech.id)}
-                                  className="p-2 hover:bg-theme-on-surface-2 rounded-lg transition-colors"
-                                  title="Remove strategy"
-                                >
-                                  <Icon
-                                    className="w-4 h-4 fill-red-500"
-                                    name="close"
-                                  />
-                                </button>
-                              </div>
-
-                              {tech.generatedCode && (
-                                <div className="mt-3 space-y-3">
-                                  <div className="flex items-center justify-between">
-                                    <div className="text-caption-2 text-theme-tertiary">
-                                      Generated Code
+                          .map((tech) => {
+                            const techId = tech._id || tech.id;
+                            return (
+                              <div
+                                key={techId}
+                                className="p-4 rounded-xl border border-blue-500 bg-blue-500/5"
+                              >
+                                <div className="flex items-start justify-between mb-3">
+                                  <div className="flex-1">
+                                    <div className="text-base-2 text-theme-primary mb-1 font-semibold">
+                                      {tech.name}
                                     </div>
-                                    <button
-                                      onClick={() => handleViewCode(tech.id)}
-                                      className="text-caption-2 text-blue-500 hover:text-blue-600 flex items-center gap-1"
-                                    >
-                                      <Icon
-                                        className="w-3 h-3 fill-blue-500"
-                                        name="code"
-                                      />
-                                      View Code
-                                    </button>
+                                    <div className="text-caption-2 text-theme-secondary">
+                                      {tech.description}
+                                    </div>
                                   </div>
-                                  <div className="flex gap-2">
-                                    {tech.generatedCode.pinescript && (
-                                      <span className="px-2 py-1 bg-theme-on-surface-2 rounded text-caption-2 text-theme-primary">
-                                        Pine Script
-                                      </span>
-                                    )}
-                                    {tech.generatedCode.python && (
-                                      <span className="px-2 py-1 bg-theme-on-surface-2 rounded text-caption-2 text-theme-primary">
-                                        Python
-                                      </span>
-                                    )}
-                                  </div>
+                                  <button
+                                    onClick={() => handleRemoveStrategy(techId)}
+                                    className="p-2 hover:bg-theme-on-surface-2 rounded-lg transition-colors"
+                                    title="Remove strategy"
+                                  >
+                                    <Icon
+                                      className="w-4 h-4 fill-red-500"
+                                      name="close"
+                                    />
+                                  </button>
                                 </div>
-                              )}
 
-                              {tech.backtestResults && (
-                                <div className="mt-3">
-                                  <div className="flex items-center justify-between mb-2">
-                                    <span className="text-caption-2 text-theme-tertiary">
-                                      Backtest Results
-                                    </span>
-                                    <button
-                                      onClick={() =>
-                                        handleViewBacktestResults(tech.id)
-                                      }
-                                      className="text-caption-2 text-blue-500 hover:text-blue-600"
-                                    >
-                                      View Details
-                                    </button>
-                                  </div>
-                                  <div className="grid grid-cols-3 gap-2">
-                                    <div className="p-2 bg-theme-on-surface-2 rounded-lg">
-                                      <div className="text-caption-2 text-theme-tertiary mb-1">
-                                        Return
+                                {tech.generatedCode && (
+                                  <div className="mt-3 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <div className="text-caption-2 text-theme-tertiary">
+                                        Generated Code
                                       </div>
-                                      <div
-                                        className={`text-caption-1 font-semibold ${
-                                          tech.backtestResults
-                                            .totalReturnPercentage > 0
-                                            ? "text-green-500"
-                                            : "text-red-500"
-                                        }`}
+                                      <button
+                                        onClick={() => handleViewCode(techId)}
+                                        className="text-caption-2 text-blue-500 hover:text-blue-600 flex items-center gap-1"
                                       >
-                                        {tech.backtestResults.totalReturnPercentage.toFixed(
-                                          2
-                                        )}
-                                        %
-                                      </div>
+                                        <Icon
+                                          className="w-3 h-3 fill-blue-500"
+                                          name="code"
+                                        />
+                                        View Code
+                                      </button>
                                     </div>
-                                    <div className="p-2 bg-theme-on-surface-2 rounded-lg">
-                                      <div className="text-caption-2 text-theme-tertiary mb-1">
-                                        Win Rate
-                                      </div>
-                                      <div className="text-caption-1 font-semibold text-theme-primary">
-                                        {tech.backtestResults.winRate.toFixed(
-                                          1
-                                        )}
-                                        %
-                                      </div>
+                                    <div className="flex gap-2">
+                                      {tech.generatedCode.pinescript && (
+                                        <span className="px-2 py-1 bg-theme-on-surface-2 rounded text-caption-2 text-theme-primary">
+                                          Pine Script
+                                        </span>
+                                      )}
+                                      {tech.generatedCode.python && (
+                                        <span className="px-2 py-1 bg-theme-on-surface-2 rounded text-caption-2 text-theme-primary">
+                                          Python
+                                        </span>
+                                      )}
                                     </div>
-                                    <div className="p-2 bg-theme-on-surface-2 rounded-lg">
-                                      <div className="text-caption-2 text-theme-tertiary mb-1">
-                                        Sharpe
+                                  </div>
+                                )}
+
+                                {tech.backtestResults && (
+                                  <div className="mt-3">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <span className="text-caption-2 text-theme-tertiary">
+                                        Backtest Results
+                                      </span>
+                                      <button
+                                        onClick={() =>
+                                          handleViewBacktestResults(techId)
+                                        }
+                                        className="text-caption-2 text-blue-500 hover:text-blue-600"
+                                      >
+                                        View Details
+                                      </button>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-2">
+                                      <div className="p-2 bg-theme-on-surface-2 rounded-lg">
+                                        <div className="text-caption-2 text-theme-tertiary mb-1">
+                                          Return
+                                        </div>
+                                        <div
+                                          className={`text-caption-1 font-semibold ${
+                                            tech.backtestResults
+                                              .totalReturnPercentage > 0
+                                              ? "text-green-500"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          {tech.backtestResults.totalReturnPercentage.toFixed(
+                                            2
+                                          )}
+                                          %
+                                        </div>
                                       </div>
-                                      <div className="text-caption-1 font-semibold text-theme-primary">
-                                        {tech.backtestResults.sharpeRatio.toFixed(
-                                          2
-                                        )}
+                                      <div className="p-2 bg-theme-on-surface-2 rounded-lg">
+                                        <div className="text-caption-2 text-theme-tertiary mb-1">
+                                          Win Rate
+                                        </div>
+                                        <div className="text-caption-1 font-semibold text-theme-primary">
+                                          {tech.backtestResults.winRate.toFixed(
+                                            1
+                                          )}
+                                          %
+                                        </div>
+                                      </div>
+                                      <div className="p-2 bg-theme-on-surface-2 rounded-lg">
+                                        <div className="text-caption-2 text-theme-tertiary mb-1">
+                                          Sharpe
+                                        </div>
+                                        <div className="text-caption-1 font-semibold text-theme-primary">
+                                          {tech.backtestResults.sharpeRatio.toFixed(
+                                            2
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-                              )}
-                            </div>
-                          ))}
+                                )}
+                              </div>
+                            );
+                          })}
                       </div>
                     </div>
                   )}
@@ -1453,7 +1484,7 @@ plot(sma50, color=color.red)`;
 
               {(() => {
                 const strategy = formData.selectedTechnicalStrategies.find(
-                  (s) => s.id === viewingStrategyId
+                  (s) => (s._id || s.id) === viewingStrategyId
                 );
                 if (!strategy || !strategy.generatedCode) return null;
 
@@ -1518,7 +1549,7 @@ plot(sma50, color=color.red)`;
 
               {(() => {
                 const strategy = formData.selectedTechnicalStrategies.find(
-                  (s) => s.id === viewingBacktestStrategyId
+                  (s) => (s._id || s.id) === viewingBacktestStrategyId
                 );
                 if (!strategy || !strategy.backtestResults) return null;
 

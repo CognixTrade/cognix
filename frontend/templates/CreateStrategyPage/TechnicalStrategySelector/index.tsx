@@ -14,8 +14,10 @@ const TechnicalStrategySelector = ({
     selectedStrategies,
     onToggle,
 }: TechnicalStrategySelectorProps) => {
+    const getStrategyId = (strategy: any) => strategy._id || strategy.id;
+
     const isSelected = (strategy: TechnicalStrategy) => {
-        return selectedStrategies.some((s) => s.id === strategy.id);
+        return selectedStrategies.some((s) => getStrategyId(s) === getStrategyId(strategy));
     };
 
     return (
@@ -24,7 +26,7 @@ const TechnicalStrategySelector = ({
                 const selected = isSelected(strategy);
                 return (
                     <button
-                        key={strategy.id}
+                        key={getStrategyId(strategy)}
                         onClick={() => onToggle(strategy)}
                         className={`p-4 rounded-xl border-2 text-left transition-all ${
                             selected
@@ -63,7 +65,7 @@ const TechnicalStrategySelector = ({
                 .filter((s) => s.isCustom)
                 .map((strategy) => (
                     <div
-                        key={strategy.id}
+                        key={getStrategyId(strategy)}
                         className="p-4 rounded-xl border-2 border-primary-1 bg-primary-1/10 relative"
                     >
                         <button

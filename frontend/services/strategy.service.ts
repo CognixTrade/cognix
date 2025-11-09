@@ -8,11 +8,8 @@ export const createStrategy = async (userId: string, strategyData: any) => {
     console.log("Creating strategy with data:", strategyData);
     console.log("For user ID:", userId);
     const payload = {
-      name: strategyData.name,
       userId: userId,
-      description: strategyData.description,
-      risk: strategyData.risk,
-      agents: strategyData.agents, // [Array of objects with agentId: string, votingPower: 0.1, customPrompt: string, code: string]
+      ...strategyData,
     };
 
     const response = await axios.post(
