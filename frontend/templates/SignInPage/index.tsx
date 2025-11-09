@@ -137,7 +137,7 @@ const SignInPage = () => {
 
   return (
     <Login
-      title="Neutrino"
+      title="Cognix"
       image="/images/login-pic-1.png"
       signIn
     >

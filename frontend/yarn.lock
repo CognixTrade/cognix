@@ -3067,9 +3067,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"Neutrino@workspace:.":
+"Cognix@workspace:.":
   version: 0.0.0-use.local
-  resolution: "Neutrino@workspace:."
+  resolution: "Cognix@workspace:."
   dependencies:
     "@avail-project/nexus-core": "npm:^0.0.2"
     "@avail-project/nexus-widgets": "npm:0.0.5"

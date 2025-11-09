@@ -5,7 +5,7 @@ import Chat from "@/components/Chat";
 
 const ChatPage = () => {
   return (
-    <Layout title="Neutrino AI">
+    <Layout title="Cognix AI">
       <Chat />
     </Layout>
   );

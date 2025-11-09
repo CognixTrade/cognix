@@ -25,7 +25,7 @@ export const navigation = [
   },
   {
     id: "4",
-    title: "Neutrino AI",
+    title: "Cognix AI",
     icon: "star-plus",
     url: "/chat",
   },

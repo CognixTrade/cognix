@@ -31,8 +31,8 @@ const NeuraAI = ({}: NeuraAIProps) => {
   return (
     <Card
       className="w-[calc(50%-0.5rem)] mx-1 lg:w-full lg:mx-0"
-      title="Neutrino AI"
-      tooltip="Tooltip Neutrino AI"
+      title="Cognix AI"
+      tooltip="Tooltip Cognix AI"
       option={mode}
       setOption={setMode}
       options={modes}
