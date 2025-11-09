@@ -1456,7 +1456,7 @@ plot(sma50, color=color.red)`;
                   onClick={handleDeposit}
                   className="flex-1 px-6 py-3 text-base-2 text-white bg-primary-1 rounded-xl hover:bg-primary-2 transition-colors"
                 >
-                  Connect Wallet & Deposit
+                  Deposit & Create Stategy
                 </button>
               </div>
             </div>
