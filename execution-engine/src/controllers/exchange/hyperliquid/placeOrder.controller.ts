@@ -22,7 +22,7 @@ import { User } from "../../../models/user.model";
  *             properties:
  *               userId:
  *                 type: string
- *                 description: Privy user id of the user
+ *                 description: Mongo DB user ID
  *               coin:
  *                 type: string
  *                 description: Symbol of the coin to trade (e.g., BTC)
@@ -57,35 +57,43 @@ import { User } from "../../../models/user.model";
  *         description: Internal server error
  */
 export const placeOrder = async (req: Request, res: Response) => {
-    try {
-        const { userId, coin, size, side, tp, sl } = req.body;
+  try {
+    const { userId, coin, size, side, tp, sl } = req.body;
 
-        if (!userId || !coin || !size) {
-            res.status(400).json({ error: "userId, coin and size are required" });
-        }
-
-        const user = await User.findOne({ uniqueWalletId: userId }).lean();
-        
-        if (!user) {
-            res.status(500).json({
-                success: false,
-                message: "User not found",
-            });
-        }
-
-        const orderResult = await HyperliquidClient.placeOrder(user.apiWallet.privateKey, coin, size, side || "buy", tp, sl);
-
-        logger.info("Placed order successfully", { coin, size, side, tp, sl });
-
-        res.status(201).json({
-            success: true,
-            order: orderResult,
-        });
-    } catch (error: any) {
-        logger.error("Error placing order", {
-            error: error.message,
-            body: req.body,
-        });
-        res.status(500).json({ success: false, error: error.message });
+    if (!userId || !coin || !size) {
+      res.status(400).json({ error: "userId, coin and size are required" });
     }
+
+    // const user = await User.findOne({ uniqueWalletId: userId }).lean();
+    const user = await User.findById(userId).lean();
+
+    if (!user) {
+      res.status(500).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const orderResult = await HyperliquidClient.placeOrder(
+      user.apiWallet.privateKey,
+      coin,
+      size,
+      side || "buy",
+      tp,
+      sl
+    );
+
+    logger.info("Placed order successfully", { coin, size, side, tp, sl });
+
+    res.status(201).json({
+      success: true,
+      order: orderResult,
+    });
+  } catch (error: any) {
+    logger.error("Error placing order", {
+      error: error.message,
+      body: req.body,
+    });
+    res.status(500).json({ success: false, error: error.message });
+  }
 };
