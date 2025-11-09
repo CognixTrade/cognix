@@ -50,6 +50,7 @@ class SupervisorState(BaseModel):
     final_output: Optional[str] = None
     user_detail: str
     trade_executions: List[TradeExecution] = Field(default_factory=list)  # Track all trades
+    thread_id: str
 
     def add_decision(self, step: int, agent: str, reasoning: str, task: str):
         d = SupervisorDecision(step=step, selected_agent=agent, reasoning=reasoning, task=task)

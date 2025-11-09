@@ -1,14 +1,14 @@
 {
   "name": "algorithm-engine",
   "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
+  "main": "dist/index.js",
   "description": "",
   "author": "",
   "license": "ISC",
   "scripts": {
     "dev": "nodemon --watch src --exec ts-node src/index.ts",
     "build": "tsc",
+    "start": "node dist/index.js",
     "start:redis": "docker compose up -d redis",
     "stop:redis": "docker compose down",
     "redis:logs": "docker logs -f redis-local",
@@ -16,7 +16,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@upstash/redis": "^1.35.6",
+    "axios": "^1.13.2",
     "bullmq": "^5.63.0",
+    "dotenv": "^17.2.3",
     "ioredis": "^5.8.2",
     "ws": "^8.18.3"
   },

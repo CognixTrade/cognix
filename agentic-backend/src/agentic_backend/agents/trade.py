@@ -4,7 +4,7 @@ from ..mcp.clients import init_clients
 from langgraph.prebuilt import create_react_agent
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
-
+from ..users.users import get_agent_weight_and_prompt , get_strategy_details
 from langchain.chat_models import init_chat_model
 from ..api.users import get_user
 import json
@@ -15,15 +15,30 @@ llm = init_chat_model("openai:gpt-4o")
 async def trade_agent_node(state: SupervisorState) -> SupervisorState:
     """Run the trade agent with the current task and update state."""
 
-    user_detail = get_user(state.user_detail)
+    
+    user_id = state.user_detail              # from state
+    strategy_id = state.thread_id            # from state
+    agent_name = "executor"                   # or "technical" if finance = technical
+    # ✅ fetch strategy details
+    strategy = get_strategy_details(user_id, strategy_id)
+    agent_meta = get_agent_weight_and_prompt(user_id, strategy_id, agent_name)
 
+    if "error" in agent_meta:
+        raise ValueError(agent_meta["error"])
+
+    user_prompt = agent_meta.get("customPrompt") or ""
     sysprompt_trade_agent = f"""
 <system_prompt>
   <role>
     You are an advanced crypto trading AI assistant. Be serious, logical, and precise.
     Your goal is to help the user execute trades safely on Hyperliquid using proper market analysis.
   </role>
-
+  <user_request>{user_prompt}</user_request>
+    <strategy_details>
+    <asset>{strategy.get("cryptoAsset")}</asset>
+    <timeframe>{strategy.get("timeframe")}</timeframe>
+    <risk>{strategy.get("risk")}</risk>
+  </strategy_details>
   <purpose>
     Analyze market data, confirm trade setups using pivot points and current price, 
     and execute BUY or SELL orders only when the risk/reward ratio is favorable.
@@ -67,7 +82,8 @@ async def trade_agent_node(state: SupervisorState) -> SupervisorState:
   </validation_rules>
 
   <execution_process>
-    1. Analyze market using analyze_market().
+    1. DBased on context data decide if should take buy or sell trade 
+    7. Analyze market using analyze_market().
     2. Confirm SL/TP and risk/reward are favorable.do not take decimal part . 
     3. Execute trade using place_trade() with sl and tp parameters.
     4. Report trade confirmation including SL, TP, current price, and reasoning.
@@ -81,12 +97,13 @@ async def trade_agent_node(state: SupervisorState) -> SupervisorState:
     - If trade is skipped, state the exact reason.
     - Avoid speculation; only act based on analysis and constraints.
   </communication_guidelines>
-
+  
   <context>
     Current Task: {state.current_task}
     Context Data: {json.dumps(state.context, indent=2, default=str)}
   </context>
-
+<private_key>{user_detail}</private_key>
+<note> use private_key when you place trade</note>
   <reminder>
     Always follow the analyze → evaluate → place_trade flow.
     Never place a trade without sufficient confirmation.

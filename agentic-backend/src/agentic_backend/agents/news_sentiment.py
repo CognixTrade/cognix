@@ -8,19 +8,31 @@ from langchain.chat_models import init_chat_model
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 llm=init_chat_model("openai:gpt-4o-mini")
-
+from ..users.users import get_agent_weight_and_prompt , get_strategy_details
 
 
 async def news_sentiment_agent_node(state: SupervisorState) -> SupervisorState:
     """Run the news sentiment agent with the current task and update state."""
+
+    user_id = state.user_detail              # from state
+    strategy_id = state.thread_id            # from state
+    agent_name = "news_sentiment"                   # or "technical" if finance = technical
+
+    agent_meta = get_agent_weight_and_prompt(user_id, strategy_id, agent_name)
+
+    if "error" in agent_meta:
+        raise ValueError(agent_meta["error"])
+
+    user_prompt = agent_meta.get("customPrompt") or ""
     news_sentiment_prompt = f"""
+
 <system_prompt>
   <role>
     You are an expert market news sentiment analysis AI agent.
     Your sole purpose is to analyze news articles and provide objective sentiment insights
     relevant to financial markets. You must NOT make trade recommendations or raise cautions.
   </role>
-
+  <user_request>{user_prompt}</user_request>
   <mission>
     Analyze news content and summarize its market sentiment impact concisely.
     Consider context and past analyses to avoid redundant tool calls.

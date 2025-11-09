@@ -63,7 +63,14 @@ def serialize_state(obj):
         return str(obj)
     except:
         return None
-
+#   const payload = {
+#     user_id: userId,
+#     strategy_id: strategyId,
+#     timeframe: timeframe,
+#     asset_symbol: assetSymbol,
+#     indicator_name: indicatorName,
+#     direction: direction
+#   }
 
 import traceback
 @router.websocket("/ws/chat")
@@ -90,6 +97,7 @@ async def chat_endpoint(websocket: WebSocket):
                 request_summary=memory["request_summary"] if memory else None,
                 response_summary=memory["response_summary"] if memory else None,
                 user_detail=user_id,
+                thread_id=thread_id,
             )
             # print(incoming_state)
 
@@ -97,6 +105,7 @@ async def chat_endpoint(websocket: WebSocket):
             final_state = None
             kwargs={
                 "user_id":user_id,
+                
             }
             try:
                 async for chunk in run_sync(incoming_state, thread_id=thread_id, **kwargs):
@@ -168,18 +177,20 @@ async def chat_endpoint(websocket: WebSocket):
     except Exception as e:
         print(f"Unexpected WebSocket error: {e}")
 
+# @router.websocket("/ws/spy")
+# async def cron_point(websocket: WebSocket):
+#     await websocket.accept()
+
+#     try:
+#         while True:
+#             msg = await websocket.receive_text()
+#             msg = ast.literal_eval(msg)
+#             user_id = msg.get("user_id", "default")
+#             strategy_id=msg.get("strategyId","default")
 
 
-# @router.get("/users", response_model=List[Dict])
-# def get_users():
-#     return users
 
-# @router.get("/users/{user_id}", response_model=Dict)
-# def get_user(user_id: int):
-#     user = next((user for user in users if user["id"] == user_id), None)
-#     if user:
-#         return user
-#     return {"error": "User not found"}
+
 
 
 

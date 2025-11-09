@@ -16,8 +16,8 @@ const envSchema = Joi.object({
     .default('info'),
   LOG_FILE_MAX_SIZE: Joi.string().default('20m'),
   LOG_FILE_MAX_FILES: Joi.string().default('14d'),
-  RATE_LIMIT_WINDOW_MS: Joi.number().default(900000), // 15 minutes
-  RATE_LIMIT_MAX_REQUESTS: Joi.number().default(100),
+  RATE_LIMIT_WINDOW_MS: Joi.number().default(90), // 15 minutes
+  RATE_LIMIT_MAX_REQUESTS: Joi.number().default(100000),
   CORS_ORIGIN: Joi.string().default('*'),
   CORS_CREDENTIALS: Joi.boolean().default(true),
   HEALTH_CHECK_INTERVAL: Joi.number().default(30000), // 30 seconds

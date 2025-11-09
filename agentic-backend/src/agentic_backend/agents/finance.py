@@ -6,7 +6,7 @@ from ..mcp.clients import init_clients
 from langgraph.prebuilt import create_react_agent
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
-
+from ..users.users import get_agent_weight_and_prompt , get_strategy_details
 import json
 import os
 from langchain.chat_models import init_chat_model
@@ -29,8 +29,19 @@ AVAILABLE_INDICATORS = load_available_indicators()
 
 async def financial_agent_node(state: SupervisorState) -> SupervisorState:
     """Run the financial agent with the current task and update state."""
+    user_id = state.user_detail              # from state
+    strategy_id = state.thread_id            # from state
+    agent_name = "technical"                 # or "technical" if finance = technical
+    # ✅ fetch strategy details
+    strategy = get_strategy_details(user_id, strategy_id)
+    agent_meta = get_agent_weight_and_prompt(user_id, strategy_id, agent_name)
 
-    # Format available indicators for display
+    if "error" in agent_meta:
+        raise ValueError(agent_meta["error"])
+
+    prompt = agent_meta.get("customPrompt") or ""     
+    
+        # Format available indicators for display
     indicators_list = ", ".join(AVAILABLE_INDICATORS[:30])  # Show first 30 for brevity
     indicators_note = f"Plus {len(AVAILABLE_INDICATORS) - 30} more..." if len(AVAILABLE_INDICATORS) > 30 else ""
 
@@ -56,7 +67,12 @@ async def financial_agent_node(state: SupervisorState) -> SupervisorState:
          {indicators_list}
        - Note: {indicators_note}
   </tools>
-
+  <user_request>{prompt}</user_request>
+    <strategy_details>
+    <asset>{strategy.get("cryptoAsset")}</asset>
+    <timeframe>{strategy.get("timeframe")}</timeframe>
+    <risk>{strategy.get("risk")}</risk>
+  </strategy_details>
   <rules>
     - Use at most 1–2 tools per analysis.
     - Avoid redundant calls; check if data already exists in context.
