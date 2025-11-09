@@ -359,7 +359,7 @@ plot(sma50, color=color.red)`;
           formData.riskLevel.charAt(0).toUpperCase() +
           formData.riskLevel.slice(1), // Capitalize first letter
         indicators: formData.selectedTechnicalStrategies.map(
-          (strategy) => strategy._id || strategy.id
+          (strategy) => (strategy as any)._id || strategy.id
         ),
         cryptoAsset: formData.selectedToken,
         timeframe: formData.selectedTimeframe,
@@ -953,7 +953,7 @@ plot(sma50, color=color.red)`;
                         {formData.selectedTechnicalStrategies
                           .filter((t) => t.isCustom)
                           .map((tech) => {
-                            const techId = tech._id || tech.id;
+                            const techId = tech.id;
                             return (
                               <div
                                 key={techId}
@@ -1484,7 +1484,7 @@ plot(sma50, color=color.red)`;
 
               {(() => {
                 const strategy = formData.selectedTechnicalStrategies.find(
-                  (s) => (s._id || s.id) === viewingStrategyId
+                  (s) => ((s as any)._id || s.id) === viewingStrategyId
                 );
                 if (!strategy || !strategy.generatedCode) return null;
 
@@ -1549,7 +1549,7 @@ plot(sma50, color=color.red)`;
 
               {(() => {
                 const strategy = formData.selectedTechnicalStrategies.find(
-                  (s) => (s._id || s.id) === viewingBacktestStrategyId
+                  (s) => ((s as any)._id || s.id) === viewingBacktestStrategyId
                 );
                 if (!strategy || !strategy.backtestResults) return null;
 

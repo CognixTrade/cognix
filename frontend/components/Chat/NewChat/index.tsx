@@ -81,13 +81,12 @@ const AgentChat = ({
       try {
         const strategies = await getUserStrategies(currentUserId);
         if (strategies && strategies.length > 0) {
-
           // Use the first strategy as thread_id
           // setThreadId(strategies[0]._id);
 
           const threadId = generateUniqueThreadId();
           setThreadId(threadId);
-          
+
           // console.log("Using strategy as thread_id:", strategies[0]._id);
           console.log("Using strategy as thread_id:", threadId);
         } else {
@@ -277,7 +276,8 @@ const AgentChat = ({
 
       const payload = {
         user_id: userId,
-        thread_id: threadId,
+        // thread_id: threadId,
+        thread_id: "6910c42cdcd64af5c6cfac34",
         message: messageText,
       };
       console.log("Sending:", payload);
