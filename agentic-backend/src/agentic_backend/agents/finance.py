@@ -37,7 +37,7 @@ async def financial_agent_node(state: SupervisorState) -> SupervisorState:
     agent_meta = get_agent_weight_and_prompt(user_id, strategy_id, agent_name)
 
     if "error" in agent_meta:
-        raise ValueError(agent_meta["error"])
+        agent_meta={}
 
     prompt = agent_meta.get("customPrompt") or ""     
     

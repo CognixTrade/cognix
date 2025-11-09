@@ -24,7 +24,7 @@ async def trade_agent_node(state: SupervisorState) -> SupervisorState:
     agent_meta = get_agent_weight_and_prompt(user_id, strategy_id, agent_name)
 
     if "error" in agent_meta:
-        raise ValueError(agent_meta["error"])
+        agent_meta={}
 
     user_prompt = agent_meta.get("customPrompt") or ""
     sysprompt_trade_agent = f"""
@@ -102,7 +102,7 @@ async def trade_agent_node(state: SupervisorState) -> SupervisorState:
     Current Task: {state.current_task}
     Context Data: {json.dumps(state.context, indent=2, default=str)}
   </context>
-<private_key>{user_detail}</private_key>
+<private_key>{user_id}</private_key>
 <note> use private_key when you place trade</note>
   <reminder>
     Always follow the analyze → evaluate → place_trade flow.

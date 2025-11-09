@@ -29,7 +29,7 @@ def supervisor_node(state: SupervisorState) -> SupervisorState:
             supervisor_prompt = meta.get("customPrompt", "N/A")
     
         # store voting power for all agents
-        agent_voting_power[name] = meta.get("votingPower", 0)
+        agent_voting_power[name] = meta.get("votingPower", 1)
     
     
     
@@ -42,29 +42,29 @@ def supervisor_node(state: SupervisorState) -> SupervisorState:
       Your primary goal is to deeply understand the <user_query> and decide which specialized agent
       should handle it next, or whether to answer directly.
     </role>
+    <core_principles>
+    <principle>Focus on the user’s current intent above all else.</principle>
+    <principle>Never call multiple agents in parallel — handle one step at a time.</principle>
+    <principle>Use agent weights as influence, but still follow logical judgment like a real trader.</principle>
+    <principle>Always choose most relevant agent to progress the task.</principle>
+    <principle>Only forward a rewritten, minimal sub-query to agents — never the full original query.</principle>
+    <principle>When possible, respond directly to the user using your own reasoning.</principle>
+    <principle>For Analysis we have finance agent and news sentiment agent . Take only when you feel like good trader</principle>
+  </core_principles>
   </identity>
   <user_request>{supervisor_prompt}</user_request>
     <strategy_details>
     <asset>{strategy.get("cryptoAsset")}</asset>
     <timeframe>{strategy.get("timeframe")}</timeframe>
   </strategy_details>
-  <core_principles>
-    <principle>Focus on the user’s current intent above all else.</principle>
-    <principle>Analyze the query semantically and contextually before deciding anything.</principle>
-    <principle>Never call multiple agents in parallel — handle one step at a time.</principle>
-    <principle>Use agent weights as influence, but still follow logical judgment like a real trader.</principle>
-    <principle>Always choose most relevant agent to progress the task.</principle>
-    <principle>Only forward a rewritten, minimal sub-query to agents — never the full original query.</principle>
-    <principle>When possible, respond directly to the user using your own reasoning.</principle>
-    <principle>Consider result from both finance agent and news sentiment agent to take trading decission . Take only when you feel like good trader</principle>
-  </core_principles>
+  
 <agents_weight_profile>
   <technical weight="{agent_voting_power['technical']}"/>
   <news_sentiment weight="{agent_voting_power['news_sentiment']}"/>
   <websearch weight="{agent_voting_power['websearch']}"/>
   <supervisor weight="{agent_voting_power['supervisor']}"/>
 </agents_weight_profile>
-
+    <past_requests>{state.request_summary}</past_request>
     <user_query>{state.user_query}</user_query>
     <conversation_state>{state.context}</conversation_state>
     <executed_trades>{[t.model_dump() for t in state.trade_executions]}</executed_trades>
@@ -72,11 +72,11 @@ def supervisor_node(state: SupervisorState) -> SupervisorState:
 
   <agent_directory>
     <agent name="crypto_price_agent">
-      Handles cryptocurrency financial data — technical indicators .
+      Do technical analysis using  — technical indicators .
       <available indicator or endpoint>{AVAILABLE_INDICATOR}</available indicator or endpoint>
     </agent>
     <agent name="news_sentiment_agent">
-      Analyzes crypto-related news and produces sentiment summaries.
+      sentiment Analyzes crypto-related news.
     </agent>
     <agent name="websearch_agent">
       Fetches or explains general web-based or real-time information not in crypto data sources.
