@@ -29,7 +29,7 @@ export const registerUser = async (
 
 export const getUserDetails = async (walletId: string) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/v1/user/${walletId}`);
+    const response = await axios.get(`${API_BASE_URL}/api/v1/user/${walletId}/walletId`);
 
     return response.data;
   } catch (error) {

@@ -340,12 +340,17 @@ plot(sma50, color=color.red)`;
         risk:
           formData.riskLevel.charAt(0).toUpperCase() +
           formData.riskLevel.slice(1), // Capitalize first letter
+        indicators: formData.selectedTechnicalStrategies,
+        cryptoAsset: formData.selectedToken,
+        timeframe: formData.selectedTimeframe,
+        leverage: formData.leverage,
+        depositAmount: formData.depositAmount,
         agents: agentConfigs,
       };
 
       console.log("Agent configs built:", agentConfigs);
       console.log("Form data:", formData);
-      console.log("Strategy data to send:", strategyData);
+      console.log("❤️❤️Strategy data to send:", strategyData);
 
       const userId = getUserId();
 
@@ -356,7 +361,7 @@ plot(sma50, color=color.red)`;
         return;
       }
 
-      const response = await createStrategy(userId, strategyData);
+      // const response = await createStrategy(userId, strategyData);
 
       console.log("Strategy created successfully:", response);
       router.push("/strategies");
