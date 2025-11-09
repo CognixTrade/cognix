@@ -21,7 +21,7 @@ async def news_sentiment_agent_node(state: SupervisorState) -> SupervisorState:
     agent_meta = get_agent_weight_and_prompt(user_id, strategy_id, agent_name)
 
     if "error" in agent_meta:
-        raise ValueError(agent_meta["error"])
+        agent_meta={}
 
     user_prompt = agent_meta.get("customPrompt") or ""
     news_sentiment_prompt = f"""

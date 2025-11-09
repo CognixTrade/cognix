@@ -12,7 +12,7 @@ def fetch_single_strategy(user_id: str, strategy_id: str):
     response = requests.get(url)
 
     if response.status_code != 200:
-        raise Exception(f"API Error: {response.status_code} - {response.text}")
+        return {}
 
     return response.json()
 
