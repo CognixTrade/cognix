@@ -1,4 +1,4 @@
-# Neutrino: Trade with Intelligence
+# Cognix: Trade with Intelligence
 
 An intelligent trading system that combines natural language algorithm creation, multi-agent analysis, and automated execution on Hyperliquid DEX with bridging capabilities via Avail Nexus.
 
