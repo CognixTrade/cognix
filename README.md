@@ -6,14 +6,6 @@ An intelligent trading system that combines natural language algorithm creation,
 
 This platform revolutionizes algorithmic trading by allowing users to create trading strategies in natural language, validate them through backtesting, and execute them via an intelligent multi-agent system that performs comprehensive technical and sentiment analysis before placing trades.
 
-## Product Screens
-![alt text](img/f57da5f6-0042-43c8-9e8b-629c334c427d.jpeg)
-![alt text](img/Screenshot-5.55.58.png)
-![alt text](img/Screenshot-5.57.03.png)
-![alt text](img/Screenshot-5.57.09.png)
-![alt text](img/Screenshot-5.59.09.png)
-![alt text](img/Screenshot-5.59.19.png)
-
 ## 🏗️ Architecture
 
 ### System Components
