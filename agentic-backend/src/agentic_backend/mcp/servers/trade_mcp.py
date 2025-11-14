@@ -24,7 +24,7 @@ def analyze_market(coin: str, interval: str = "1h"):
     """
     Fetches the current price and pivot points (support/resistance levels) for a given coin.
     Calculates potential stop-loss (SL) and take-profit (TP) levels for both buy and sell trades
-    based on risk/reward ratio logic.
+    
 
     Parameters:
         coin (str): The symbol of the cryptocurrency (e.g., "BTC").
@@ -111,7 +111,7 @@ def analyze_market(coin: str, interval: str = "1h"):
                 max_reward = current_price - s_levels[-1] if s_levels else 0
                 if sl and (sl - current_price) > (0.4 * max_reward):
                     reason = "Risk too high vs max potential reward (s3)."
-            return {"sl": sl, "tp": tp, "reason": reason}
+            return {"sl": sl, "tp": tp}
 
         analysis = {
             "current_price": current_price,

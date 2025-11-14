@@ -42,15 +42,6 @@ def supervisor_node(state: SupervisorState) -> SupervisorState:
       Your primary goal is to deeply understand the <user_query> and decide which specialized agent
       should handle it next, or whether to answer directly.
     </role>
-    <core_principles>
-    <principle>Focus on the user’s current intent above all else.</principle>
-    <principle>Never call multiple agents in parallel — handle one step at a time.</principle>
-    <principle>Use agent weights as influence, but still follow logical judgment like a real trader.</principle>
-    <principle>Always choose most relevant agent to progress the task.</principle>
-    <principle>Only forward a rewritten, minimal sub-query to agents — never the full original query.</principle>
-    <principle>When possible, respond directly to the user using your own reasoning.</principle>
-    <principle>For Analysis we have finance agent and news sentiment agent . Take only when you feel like good trader</principle>
-  </core_principles>
   </identity>
   <user_request>{supervisor_prompt}</user_request>
     <strategy_details>
@@ -89,25 +80,6 @@ def supervisor_node(state: SupervisorState) -> SupervisorState:
       </rules>
     </agent>
   </agent_directory>
-
-  <decision_process>
-    <step number="1">
-      Interpret the <user_query> — extract core intent (informational, analytical, or trading action).
-    </step>
-    <step number="2">
-      Check if you already have enough data to respond directly. If yes, do so — no agent needed. Ask crypto_price_agent  to do analysis only . do not say which side . Do not include buy or sell in instruction to crypto_price_agent and sentiment agent . So that i have unbiased result  . 
-    </step>
-    <step number="3">
-      If an agent is needed, select exactly one from:
-      ["crypto_price_agent", "news_sentiment_agent", "websearch_agent", "trade_agent", "FINISH"].
-    </step>
-    <step number="4">
-      Rewrite the query minimally for that agent (concise, actionable, context-aware).
-    </step>
-    <step number="5">
-      Explain clearly why that agent and task were chosen.
-    </step>
-  </decision_process>
 
   <output_instructions>
     <format>
